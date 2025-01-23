@@ -584,7 +584,7 @@ public static void main() {
     lInteger.add(2);
 }
 ```
-- Wrapper-Klassen
+Wrapper-Klassen:
 ```java
 int x = new Integer(5); // Autounboxing
 Integer y = 6;
@@ -605,13 +605,13 @@ int z = new Integer(3) + 2;
 
 
 # Collections & Map
-- Listen:
+Listen:
 ```java
 ArrayList<String> list = new ArrayList<String>(); // Seq. Array
 LinkedList<String> list = new LinkedList<String>(); // doppelt verkettete Liste
 Vector<String> list = new Vector<String>(); // Seq. Array
 ```
-- Maps (Paare aus Schlüssel vom Typ K und Werten von Typ V (Schlüssel eindeutig)):
+Maps (Paare aus Schlüssel vom Typ K und Werten von Typ V (Schlüssel eindeutig)):
 ```java
 // Hashtabelle, zufällige Reihenfolge
 HashMap<String, String> map = new HashMap<String, String>();
@@ -620,7 +620,7 @@ LinkedHashMap<String, String> map = new LinkedHashMap<String, String>();
 // Rot-Schwarz-Baum, sortierte Reihenfolge
 TreeMap<String, String> map = new TreeMap<String, String>();
 ```
-- Sets (jede Referenz darf nur einmal vorkommen):
+Sets (jede Referenz darf nur einmal vorkommen):
 ```java
 // Hashtabelle, keine Duplikate, zufällige Reihenfolge
 HashSet<String> set = new HashSet<String>();
@@ -629,7 +629,7 @@ LinkedHashSet<String> set = new LinkedHashSet<String>();
 // Rot-Schwarz-Baum, sortierte Reihenfolge
 TreeSet<String> set = new TreeSet<String>();
 ```
-- Queues:
+Queues:
 ```java
 LinkedList<String> queue = new LinkedList<String>(); // doppelt verkettete Liste
 PriorityQueue<String> queue = new PriorityQueue<String>(); // Heap
@@ -700,6 +700,7 @@ public class Test { ... }
 | ----------- | ----------- |
 | `@Documented` | Docs erzeugen |
 | `@Inherited` | Annotation geerbt |
-| `@Retention` | Beibehaltung `SOURCE` =nur Source, `CLASS` =Bytecode, `RUNTIME` =Laufzeit über Reflection mit `import java.lang.annotation.RetentionPolicy`
-| `@Target` | Anwendbar auf: `TYPE` (Klassen, Interfaces, Enums), `ANNOTATION_TYPE` (Annotations), `FIELD` (Attribute), `PARAMETER`,`LOCAL_VARIABLE`, `CONSTRUCTOR`, `METHOD`, `PACKAGE` mit `import java.lang.annotation.ElementType`
+| `@Retention` | Beibehaltung der Annotation `SOURCE` =nur Source, `CLASS` =Bytecode, `RUNTIME` =Laufzeit über Reflection <br> `import java.lang.annotation.RetentionPolicy` & `import java.lang.annotation.Retention`
+| `@Target` | Elemente, die annotiert werden können: `TYPE` (Klassen, Interfaces, Enums), `ANNOTATION_TYPE` (Annotations), `FIELD` (Attribute), `PARAMETER`,`LOCAL_VARIABLE`, `CONSTRUCTOR`, `METHOD`, `PACKAGE` mit `import java.lang.annotation.ElementType`
 
+- Retention
