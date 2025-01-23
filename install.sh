@@ -27,7 +27,7 @@ spinner $!
 
 # Run the installation command
 progress_message "Installing required packages"
-sudo apt install -y pandoc 2>&1 | tee install.log &
+sudo apt install -y pandoc texlive-core 2>&1 | tee install.log &
 spinner $!
 
 # Check for success
