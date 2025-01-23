@@ -592,16 +592,16 @@ int z = new Integer(3) + 2;
 ```
     - Primitive Datentypen haben Wrapper-Klassen & sind in beide Richtungen typ-kompatibel
 
-    | PDT | Wrapperklasse |
-    | ----------- | ----------- |
-    | short | Short |
-    | int | Integer |
-    | long | Long |
-    | float | Float |
-    | double | Double |
-    | char | Character |
-    | boolean | Boolean |
-    | byte | Byte |
+| PDT | Wrapperklasse |
+| ----------- | ----------- |
+| short | Short |
+| int | Integer |
+| long | Long |
+| float | Float |
+| double | Double |
+| char | Character |
+| boolean | Boolean |
+| byte | Byte |
 
 
 # Collections & Map
@@ -700,7 +700,7 @@ public class Test { ... }
 | ----------- | ----------- |
 | `@Documented` | Docs erzeugen |
 | `@Inherited` | Annotation geerbt |
-| `@Retention` | Beibehaltung der Annotation `SOURCE` =nur Source, `CLASS` =Bytecode, `RUNTIME` =Laufzeit über Reflection <br> `import java.lang.annotation.RetentionPolicy` & `import java.lang.annotation.Retention`
+| `@Retention` | Beibehaltung der Annotation `SOURCE` =nur Source, `CLASS` =Bytecode, `RUNTIME` =Laufzeit über Reflection `import java.lang.annotation.RetentionPolicy` & `import java.lang.annotation.Retention`
 | `@Target` | Elemente, die annotiert werden können: `TYPE` (Klassen, Interfaces, Enums), `ANNOTATION_TYPE` (Annotations), `FIELD` (Attribute), `PARAMETER`,`LOCAL_VARIABLE`, `CONSTRUCTOR`, `METHOD`, `PACKAGE` mit `import java.lang.annotation.ElementType`
 
 - Retention
