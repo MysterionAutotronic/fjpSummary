@@ -1,6 +1,7 @@
 <!-- TOC -->
 - trivia
 - iterable bzw. interfaces allgemein
+- comparator allgemein
 
 # Modifier
 ```java
@@ -827,16 +828,17 @@ LinkedList<String> lls = new LinkedList<>();
 - `<Parameterliste> -> <Ausdruck> | <Block>`
 - Parameter sind optional
 ```java
-(a, b) -> a + b;
+(a, b) -> a + b; // Expression Lambda
 (a, b) -> {   
-    return a + b;
+    return a + b; // Statement Lamda
 }
 () -> {
     System.out.println("Hello World");
 }
 ```
 
-## Predicate
+## Functional Interfaces
+### Predicate
 ```java
 import java.util.function.Predicate;
 
@@ -844,10 +846,11 @@ import java.util.function.Predicate;
 interface Predicate<T> {
     boolean test(T t);
 }
+
 Predicate<Person> checkAlter = p -> p.getAlter() >= 18;
 ```
 
-Nutzung:
+Beispiel:
 ```java
 void example(Predicate<Person> pred) {
     if(pred.test(pElem)) {
@@ -869,7 +872,7 @@ example(p -> p.getAge() >= 17);
 ```
 
 
-## Consumer
+### Consumer
 ```java
 import java.util.function.Consumer;
 
@@ -877,9 +880,10 @@ import java.util.function.Consumer;
 interface Consumer<T> {
     void accept(T t);
 }
+
 Consumer<Person> printPerson = p -> System.out.println(p);
 ```
-Nutzung:
+Beispiel:
 ```java
 void example(Predicate<Person> pred, Consumer<PhoneNumber> con) {
     if(pred.test(pElem)) {
@@ -890,3 +894,109 @@ void example(Predicate<Person> pred, Consumer<PhoneNumber> con) {
 example(p -> p.getAge() >= 17, num -> {doSmthWithNum(num); });
 ```
 
+
+### Function
+```java
+@FunctionalInterface
+interface Function<T, R> {
+    R apply(T t);
+}
+```
+Beispiel:
+```java
+void example(
+    Predicate<Person> pred,
+    Function<Person, PhoneNumber> mapper,
+    Consumer<PhoneNumber> con) {
+        
+    if(pred.test(pElem)) {
+        PhoneNumber num = mapper.apply(p);
+        con.accept(num);
+    }
+}
+
+example(p -> p.getAge() >= 17, p -> p.getHomePhoneNumber(), num -> {robocall(num); });
+example(p -> p.getAge() >= 16, p -> p.getMobilePhoneNumber(), num -> {txtmsg(num); });
+```
+
+### Supplier
+```java
+// Supplier: liefert Objekte vom Typ T
+@FunctionalInterface
+interface Supplier<T> {
+    T get();
+}
+```
+
+### BinaryOperator
+```java
+// BinaryOperator: zwei Objekte vom Typ T -> ein Objekt vom Typ T
+@FunctionalInterface
+interface BinaryOperator<T> {
+    T apply(T t1, T t2);
+}
+```
+
+
+## forEach
+- Iteriert über alle Elemente, die Iterable implementiert z.B. Collections
+- erwarter Consumer Interface
+```java
+void forEach(Consumer action)
+list.forEach(p -> System.out.println(p));
+
+/* Referenzen auf Funktionen ab Java 8 */
+list.forEach(Systen.out::println);
+```
+
+## Streams
+- Sequenz von Elementen, die nacheinander verarbeitet werden
+- entspricht einer Pipeline: Source -> Operations -> Consumer
+- **Sources**: Collection, Arrays, Files, ...
+- **Intermediate-Operations**: filter(Predicate p), map(Function f), sorted(Comparator c)
+- **Consumer/Terminal-Operations**: sum(T), collect(Collection), reduce(T), forEach(Consumer)
+    - reduce: subtotal/akkumulator, element -> subtotal + elements
+
+Beispiel 1:
+```java
+Integer sum = list.stream()
+    .filter(num -> (num % 2) == 0)
+    .map(num -> num * num)
+    .reduce(0, (subt, num) -> subt + num);
+
+// Mit Funktionsreferenz
+sum = list.stream()
+    .filter(num -> (num % 2) == 0)
+    .map(num -> num * num)
+    .reduce(0, Integer::sum);
+```
+
+Beispiel 2:
+```java
+var list = List.of("Hello", "Java", "World");
+list.stream()
+    .map(word -> word.toUpperCase())
+    .sorted(Comparator.comparing(word -> word.length()))
+    .forEach(word -> System.out.println(word));
+
+// Mit Funktionsreferenz
+var list = List.of("Hello", "Java", "World");
+list.stream()
+    .map(String::toUpperCase) // unbound method reference
+    .sorted(Comparator.comparing(String::length)) // unbound method reference
+    .forEach(System.out::println); // bound method reference to System.out object
+```
+
+### Parallel Streams
+- mehrere Cores nutzen
+- Vorraussetzung: unabhängig von der Reihenfolge & keine Seiteneffekte
+- Rückgabe Reihefolge der Elemente kann sich ändern
+
+Beispiel:
+```java
+gatherPersons().parallelStream()
+    .filter(p -> p.getAge() >= 18)
+    .map(p -> p.getHomePhoneNumber())
+    .filter(num -> !num.isOnDoNotCallList())
+    .forEach(num -> { robocall(num); });
+```
