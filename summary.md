@@ -642,6 +642,7 @@ PriorityQueue<String> queue = new PriorityQueue<String>(); // Heap
 - sind Metadaten & werden direkt vor das betreffende Element geschrieben
 - Nutzen: zusätzliche Semantik, Compile-Time Checks, Code Analyse durch Tools
 - Syntax Zucker - keine Funktion ohne IDE/Framework
+- **Methoden** von selbstdefinierten Annotation können keine Parameter haben und keine Exceptions auslösen
 
 
 ## Deprecated
@@ -680,6 +681,8 @@ public @interface Copyright {
 public @interface Bug { // extends Annotation
     public final static String UNASSIGNED = "[N.N.]";
     public static enum CONDITION { OPEN, CLOSED }
+
+    // Attribute von Annotation
     int id();
     String synopsis();
     String engineer() default UNASSIGNED;
@@ -693,14 +696,129 @@ public class Test { ... }
 ```
 
 
-## Meta Annotationen in java.lang.annotation
+### Meta Annotationen in java.lang.annotation
 - Annotationen für Annotationen
 
 | Annotation | Bedeutung |
 | ----------- | ----------- |
 | `@Documented` | Docs erzeugen |
 | `@Inherited` | Annotation geerbt |
-| `@Retention` | Beibehaltung der Annotation `SOURCE` =nur Source, `CLASS` =Bytecode, `RUNTIME` =Laufzeit über Reflection `import java.lang.annotation.RetentionPolicy` & `import java.lang.annotation.Retention`
+| `@Retention` | Beibehaltung der Annotation `SOURCE` =nur Source, `CLASS` =Bytecode, `RUNTIME` =Laufzeit über Reflection <br> `import java.lang.annotation.RetentionPolicy` & `import java.lang.annotation.Retention`
 | `@Target` | Elemente, die annotiert werden können: `TYPE` (Klassen, Interfaces, Enums), `ANNOTATION_TYPE` (Annotations), `FIELD` (Attribute), `PARAMETER`,`LOCAL_VARIABLE`, `CONSTRUCTOR`, `METHOD`, `PACKAGE` mit `import java.lang.annotation.ElementType`
 
-- Retention
+### komplexes Beispiel
+```java
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
+@Retention(RetentionPolicy.RUNTIME)
+public @interface Bug {
+    // Constants and enums
+    public final static String UNASSIGNED = "[N.N.]";
+    public final static String UNDATED = "[N.N.]";
+    public static enum CONDITION {OPEN, CLOSED}
+    public static enum STATE {UNAPPROVED, APPROVED, ASSIGNED,
+    IMPLEMENTED, TESTED, DOCUMENTED, REOPENED, WITHDRAWN,
+    DUPLICATE, WILL_NOT_BE_FIXED}
+
+    // Attributes
+    int id();
+    String synopsis();
+
+    // The following attributes have defaults
+    CONDITION condition() default CONDITION.OPEN;
+    STATE state() default STATE.UNAPPROVED;
+    String engineer() default UNASSIGNED;
+    String fixedDate() default UNDATED;
+}
+
+// Einsatz
+import static annotatedBugs.Bug.CONDITION;
+import static annotatedBugs.Bug.STATE;
+
+@Bug(id=378399, synopsis="Only works under Win3.11", state=STATE.WILL_NOT_BE_FIXED)
+public class BugRiddled {
+    int i;
+
+    @Bug(id=339838,
+    synopsis="Constructor obviously does " + "not initialize member i", state=STATE.ASSIGNED, engineer="Fourier Anna-Luise")
+    void BugRiddled(int i) {
+        this.i = i;
+    }
+}
+```
+
+
+
+
+# Neuerungen Java 6
+- Diagnose und Management der VM mittels jconsole
+- Integration von Java DB (Java implementierte relationale Datenbank) auf Basis von Apache Derby
+
+# Neuerungen Java 7
+## Strings in switch-Anweisungen
+```java
+private static final String IDLE = "idle";
+final String terminal = "terminated";
+switch (state) {
+    case "busy": // fall through works as before
+    case terminal: // local final variables are o.k.
+    case IDLE: // constants are o.k.
+    { break; }
+    default: ...
+}
+```
+
+
+## Numerische Literale
+Neu: Numerische Literale dürfen Unterstriche enthalten
+```java
+int decimal = 42;
+int hex = 0x2A;
+int octal = 052;
+int binary = 0b101010;
+
+long creditCardNumber = 1234_5678_9012_3456L;
+long phoneNumber = +49_789_0123_45L;
+long hexWords = 0xFFEC_DE5E;
+```
+
+
+## Exception Handling - mehrere Typen erlaubt
+Neu: mehrere Exceptions gleichzeitig abfangen
+```java
+File file;
+try {
+    file = new File(”stest.txt”);
+    file.createNewFile();
+}
+catch(final IOException | SecurityException ex) {
+    System.out.println( "multiExc: " + ex );
+}
+```
+
+
+## Automatic Resource Management
+Neu: `try` Anweisungen erzeugte Ressourcen werden autom. geschlossen, wenn das interface AutoCloseable implementiert wurde
+```java
+try( BufferedReader br = new BufferedReader(new FileReader("test.txt")) ) {
+    br.readLine();
+}
+catch(final IOException ex) {
+    System.out.println( " tryWith: " + ex );
+}
+```
+
+
+## Diamond Operator
+Neu: Vereinfachte Schreibweise zu Instanziierung von Generics, Typ kann auf linker Seite weggelassen werden
+```java
+Map<String, List<Integer> > map = new HashMap<>();
+LinkedList<String> lls = new LinkedList<>();
+```
+
+
+
+
+
+# Lambdas
