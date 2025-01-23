@@ -546,6 +546,7 @@ List<String> listen[] = (LinkedList<String>[]) new List[5];
 - Typ wird nie festgelegt
 
 
+
 ## Generische Methoden
 ```java
 public class GenericMax {
@@ -561,37 +562,35 @@ public class GenericMax {
     }
     
     public static void main(String[] args) {
-        // Vararg-Methode kann auch mit Array aufgerufen werden
         Integer iArr[] = {0, 0, 1, -1, 0, -2, 3, -5, 5};
         Integer imax = max(iArr);
-        // Keine casts noetig!
-        Double dmax = max(-2.3, 4.555, Math.PI);
-        
-        System.out.println(imax);
-        System.out.println(dmax);
+
+        Double dmax = max(-2.3, 4.555, Math.PI); // Keine casts noetig
     }
 }
 ```
 
 
+
+
 # Autoboxing
 ```java
 public static void main() {
-    /** Generics & primitive Datentypen **/
-    // Generische Klassen können nur mit Objekttypen genutzt werden
-    List<int> lint = new List<int>(); // NOK
+    List<int> lint = new List<int>(); // NOK, da primitiv
 
     Liste<Integer> lInteger = new Liste<Integer>();
     lInteger.add(2);
-
-
-    /** Wrapper Klassen **/
-    // Primitive Datentypen haben Wrapper-Klassen & sind in beide Richtungen typ-kompatibel
-    // z.B. int <-> Integer, double <-> Double, ...
-
-    /** Autoboxing & Unboxing **/
-    int x = new Integer(5);
-    Integer y = 6;
-    int z = new Integer(3) + 2;
 }
 ```
+- Wrapper-Klassen
+    ```java
+    int x = new Integer(5); // Autounboxing
+    Integer y = 6;
+    int z = new Integer(3) + 2;
+    ```
+    - Primitive Datentypen haben Wrapper-Klassen & sind in beide Richtungen typ-kompatibel
+
+| PDT | Description |
+| ----------- | ----------- |
+| Header | Title |
+| Paragraph | Text |
