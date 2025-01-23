@@ -590,13 +590,39 @@ public static void main() {
     ```
     - Primitive Datentypen haben Wrapper-Klassen & sind in beide Richtungen typ-kompatibel
 
-| PDT | Wrapperklasse |
-| ----------- | ----------- |
-| short | Short |
-| int | Integer |
-| long | Long |
-| float | Float |
-| double | Double |
-| char | Character |
-| boolean | Boolean |
-| byte | Byte |
+    | PDT | Wrapperklasse |
+    | ----------- | ----------- |
+    | short | Short |
+    | int | Integer |
+    | long | Long |
+    | float | Float |
+    | double | Double |
+    | char | Character |
+    | boolean | Boolean |
+    | byte | Byte |
+
+
+# Collections & Map
+- Listen:
+    ```java
+    ArrayList<String> list = new ArrayList<String>(); // Seq. Array
+    LinkedList<String> list = new LinkedList<String>(); // doppelt verkettete Liste
+    Vector<String> list = new Vector<String>(); // Seq. Array
+    ```
+- Maps (Paare aus Schlüssel vom Typ K und Werten von Typ V (Schlüssel eindeutig)):
+    ```java
+    HashMap<String, String> map = new HashMap<String, String>(); // Hashtabelle, zufällige Reihenfolge
+    LinkedHashMap<String, String> map = new LinkedHashMap<String, String>(); // Hashtabelle + doppelt verkettete Liste, eingefügte Reihenfolge
+    TreeMap<String, String> map = new TreeMap<String, String>(); // Rot-Schwarz-Baum, sortierte Reihenfolge
+    ```
+- Sets (jede Referenz darf nur einmal vorkommen):
+    ```java
+    HashSet<String> set = new HashSet<String>(); // Hashtabelle, keine Duplikate, zufällige Reihenfolge
+    LinkedHashSet<String> set = new LinkedHashSet<String>(); // Hashtabelle + doppelt verkettete Liste, eingefügte Reihenfolge
+    TreeSet<String> set = new TreeSet<String>(); // Rot-Schwarz-Baum, sortierte Reihenfolge
+    ```
+- Queues:
+    ```java
+    LinkedList<String> queue = new LinkedList<String>(); // doppelt verkettete Liste
+    PriorityQueue<String> queue = new PriorityQueue<String>(); // Heap
+    ```
