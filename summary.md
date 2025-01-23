@@ -697,11 +697,16 @@ public class Test { ... }
 - Annotationen für Annotationen
 
 ```
-    // Annotationen für Annotationen
-    // Documented: Dokumentation erzeugen
-    // Inherent: Annotation geerbt
-    // Retention: Beibehaltung der Annotation - SOURCE (nur Quellcode), CLASS (Bytecode), RUNTIME (Laufzeit über Reflection)
+
+
         // -> mit import java.lang.annotation.RetentionPolicy;
     // Target: Elemente, die annotiert werden können - TYPE (Class, Interface, Enums), FIELD (Attribute), CONSTRUCTOR, METHOD
-        // -> mit import java.lang.annotation.ElementType;
+        // -> mit ;
 ```
+| Annotation | Bedeutung |
+| ----------- | ----------- |
+| `@Documented` | Docs erzeugen |
+| `@Inherited` | Annotation geerbt |
+| `@Retention` | Beibehaltung `SOURCE` =nur Source, `CLASS` =Bytecode, `RUNTIME` =Laufzeit über Reflection mit `import java.lang.annotation.RetentionPolicy`
+| `@Target` | Anwendbar auf: `TYPE` (Klassen, Interfaces, Enums), `ANNOTATION_TYPE` (Annotations), `FIELD` (Attribute), `PARAMETER`,`LOCAL_VARIABLE`, `CONSTRUCTOR`, `METHOD`, `PACKAGE` mit `import java.lang.annotation.ElementType`
+
