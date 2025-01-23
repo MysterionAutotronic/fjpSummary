@@ -278,7 +278,7 @@ public enum Months {
 - Generics erlauben es uns, eine Klasse für verschiedene Datentypen zu verwenden
 
 ## Initialisierung
-- nicht erlaub:
+- nicht erlaubt:
     - `List<String> list = new List<String>();`
     - `List list = new List();`
     - `LinkedList<String> list = new List<String>();`
@@ -590,7 +590,13 @@ public static void main() {
     ```
     - Primitive Datentypen haben Wrapper-Klassen & sind in beide Richtungen typ-kompatibel
 
-| PDT | Description |
+| PDT | Wrapperklasse |
 | ----------- | ----------- |
-| Header | Title |
-| Paragraph | Text |
+| short | Short |
+| int | Integer |
+| long | Long |
+| float | Float |
+| double | Double |
+| char | Character |
+| boolean | Boolean |
+| byte | Byte |

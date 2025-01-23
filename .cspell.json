@@ -7,6 +7,7 @@
         "Anonymus",
         "Attributklasse",
         "Autoboxing",
+        "Autounboxing",
         "casten",
         "Compilezeit",
         "dmax",
@@ -24,6 +25,7 @@
         "usecase",
         "Vararg",
         "Varargs",
-        "vllt"
+        "vllt",
+        "Wrapperklasse"
     ]
 }
