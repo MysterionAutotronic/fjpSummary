@@ -6,16 +6,26 @@
     "words": [
         "Anonymus",
         "Attributklasse",
+        "Autoboxing",
+        "Autounboxing",
         "casten",
         "Compilezeit",
+        "dmax",
         "Formalparameter",
         "Hüllenklasse",
         "Intialisierung",
+        "Kontravarianz",
+        "Mehrfachbound",
         "Millis",
+        "numberlist",
+        "nums",
         "pandoc",
         "println",
+        "upcasten",
+        "usecase",
         "Vararg",
         "Varargs",
-        "vllt"
+        "vllt",
+        "Wrapperklasse"
     ]
 }

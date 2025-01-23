@@ -278,7 +278,7 @@ public enum Months {
 - Generics erlauben es uns, eine Klasse für verschiedene Datentypen zu verwenden
 
 ## Initialisierung
-- nicht erlaub:
+- nicht erlaubt:
     - `List<String> list = new List<String>();`
     - `List list = new List();`
     - `LinkedList<String> list = new List<String>();`
@@ -395,24 +395,24 @@ class GenKlasse<T> {
     - A ist Supertyp
     - B lässt sich zu A upcasten
 - `List<a> <- List<b>?`:
-    ```java
-    List<B> lb = new List<B>();
-    List<A> la = lb; // NOK
-    ```
+```java
+List<B> lb = new List<B>();
+List<A> la = lb; // NOK
+```
 -  `List <-> List<B>` (bidirektional):
-    ```java
-    ArrayList list = new ArrayList();
-    ArrayList<String> s_list = list;
-    s_list.add("hi");
+```java
+ArrayList list = new ArrayList();
+ArrayList<String> s_list = list;
+s_list.add("hi");
 
-    ArrayList<Integer> i_list = list;
-    i_list.add(new Integer(3));
+ArrayList<Integer> i_list = list;
+i_list.add(new Integer(3));
 
-    int len = 0;
-    for (String s : s_list) {
-        len += s.length(); // Runtime: Cast Integer --> String!!!
-    }
-    ```
+int len = 0;
+for (String s : s_list) {
+    len += s.length(); // Runtime: Cast Integer --> String!!!
+}
+```
     - raw types vermeiden & nicht mischen mit generics
 
 
@@ -438,54 +438,54 @@ List<String> listen[] = (LinkedList<String>[]) new List[5];
 - Kovarianz: Kann Spezialisierung verwenden (muss nicht)
 - `GenTyp<? extends Number> <- GenTyp<Integer>`
 - Initialisierung:
-    ```java
-    List <? extends Number> dExNumber;
-    dExNumber = new List<Number>(); // OK
-    dExNumber = new List<Integer>(); // OK
-    dExNumber = new List<String>(); // Type Mismatch
-    dExNumber = new List<Object>(); // Type Mismatch
-    dExNumber = new List(); // Warning, because of raw type
-    ```
+```java
+List <? extends Number> dExNumber;
+dExNumber = new List<Number>(); // OK
+dExNumber = new List<Integer>(); // OK
+dExNumber = new List<String>(); // Type Mismatch
+dExNumber = new List<Object>(); // Type Mismatch
+dExNumber = new List(); // Warning, because of raw type
+```
 - Lesezugriff:
-    ```java
-    dExNumber = new List<Integer>(); // OK
-    for( Number n : dExNumber ); // OK, da Superklasse
-    for( Integer i : dExNumber ); // NOK, da Typ nicht bekannt
-    ```
+```java
+dExNumber = new List<Integer>(); // OK
+for( Number n : dExNumber ); // OK, da Superklasse
+for( Integer i : dExNumber ); // NOK, da Typ nicht bekannt
+```
 - Schreibzugriff:
-    ```java
-    dExNumber.add( new Integer(3) ); // NOK
-    dExNumber.contains( new Integer(3) ); // NOK
+```java
+dExNumber.add( new Integer(3) ); // NOK
+dExNumber.contains( new Integer(3) ); // NOK
 
-    Number n = new Integer(3);
-    dExNumber.add(n); // NOK
+Number n = new Integer(3);
+dExNumber.add(n); // NOK
 
-    dExNumber.add(null); // OK
-    ```
-    - kein Schreibzugriff, da Typ nicht bekannt (kann Integer, Float, ... sein)
-    ```java
-    List<? extends Integer> dExInteger = new List<Integer>();
-    for(Integer i : dExInteger); // OK
-    dExInteger.add( new Integer(3) ); // NOK, da Typ unbekannt
-    ```
+dExNumber.add(null); // OK
+```
+- kein Schreibzugriff, da Typ nicht bekannt (kann Integer, Float, ... sein)
+```java
+List<? extends Integer> dExInteger = new List<Integer>();
+for(Integer i : dExInteger); // OK
+dExInteger.add( new Integer(3) ); // NOK, da Typ unbekannt
+```
 - usecase - lesende Übergabe:
-    ```java
-    public static double sum(List<? extends Number> numberlist) {
-        double sum = 0.0;
-        for (Number n : numberlist) {
-            sum += n.doubleValue();
-        }
-        return sum;
+```java
+public static double sum(List<? extends Number> numberlist) {
+    double sum = 0.0;
+    for (Number n : numberlist) {
+        sum += n.doubleValue();
     }
+    return sum;
+}
 
-    public static void main(String args[]) {
-        List<Integer> integerList = Arrays.asList(1, 2, 3);
-        System.out.println("sum = " + sum(integerList));
+public static void main(String args[]) {
+    List<Integer> integerList = Arrays.asList(1, 2, 3);
+    System.out.println("sum = " + sum(integerList));
 
-        List<Double> doubleList = Arrays.asList(1.2, 2.3, 3.5);
-        System.out.println("sum = " + sum(doubleList));
-    }
-    ```
+    List<Double> doubleList = Arrays.asList(1.2, 2.3, 3.5);
+    System.out.println("sum = " + sum(doubleList));
+}
+```
 
 ### Lower Bound
 - Ziel: Liste spezifizieren, die mit Integer oder einem Supertyp von Integer parametrisiert ist (lower bound)
@@ -494,51 +494,51 @@ List<String> listen[] = (LinkedList<String>[]) new List[5];
 - Kontravarianz: Kann allgemeineren Typ verwenden
 - `GenTyp<? super Integer> <- GenTyp<Number>`
 - Initialisierung:
-    ```java
-    List<? super Integer> dSupInt;
-    dSupInt = new ArrayList<Number>(); // OK
-    dSupInt = new List<Integer>(); // OK
-    dSupInt = new List<String>(); // Type Mismatch
-    dSupInt = new List<Object>(); // OK, because Object is super type of Integer
-    dSupInt = new List(); // Warning, because of raw type
-    ```
+```java
+List<? super Integer> dSupInt;
+dSupInt = new ArrayList<Number>(); // OK
+dSupInt = new List<Integer>(); // OK
+dSupInt = new List<String>(); // Type Mismatch
+dSupInt = new List<Object>(); // OK, because Object is super type of Integer
+dSupInt = new List(); // Warning, because of raw type
+```
 - Initialisierung Interfaces:
-    ```java
-    dSupInt = new List<Serializable>(); // OK, da Number das Interface implementiert
-    dSupInt = new List<Comparable<Number>>(); // NOK, da Integer nicht Comparable implementiert
-    dSupInt = new List<Comparable<Integer>>(); // OK, da Integer Comparable implementiert
-    ```
+```java
+dSupInt = new List<Serializable>(); // OK, da Number das Interface implementiert
+dSupInt = new List<Comparable<Number>>(); // NOK, da Integer nicht Comparable implementiert
+dSupInt = new List<Comparable<Integer>>(); // OK, da Integer Comparable implementiert
+```
 - Lesezugriff:
-    ```java
-    for(Number n : dSupInt); // NOK
-    for(Object o : dSupInt); // OK
-    ```
+```java
+for(Number n : dSupInt); // NOK
+for(Object o : dSupInt); // OK
+```
     - kein Lesezugriff, da Typ unbekannt & Liste könnte `Object` enthalten
 - Schreibzugriff:
-    ```java
-    dSupInt.add( new Integer(3) ); // OK, da mindestens Integer
+```java
+dSupInt.add( new Integer(3) ); // OK, da mindestens Integer
 
-    Number ni = new Integer(3); // upcast
-    dSupInt.add(ni); // NOK
+Number ni = new Integer(3); // upcast
+dSupInt.add(ni); // NOK
 
-    dSupInt.add(null); // OK
-    ```
+dSupInt.add(null); // OK
+```
 - usecase - schreibende Übergabe
-    ```java
-    // usecase example - schreibende Übergabe
-    public static void addCat(List<? super Cat> catList) {
-        catList.add(new RedCat());
-    }
+```java
+// usecase example - schreibende Übergabe
+public static void addCat(List<? super Cat> catList) {
+    catList.add(new RedCat());
+}
 
-    List<Animal> animalList= new ArrayList<Animal>();
-    List<Cat> catList= new ArrayList<Cat>();
-    List<RedCat> redCatList= new ArrayList<RedCat>();
+List<Animal> animalList= new ArrayList<Animal>();
+List<Cat> catList= new ArrayList<Cat>();
+List<RedCat> redCatList= new ArrayList<RedCat>();
 
-    addCat(catList);
-    addCat(animalList); // animal is superclass of Cat
+addCat(catList);
+addCat(animalList); // animal is superclass of Cat
 
-    addCat(redCatList); // NOK, because Cat is superclass of RedCat
-    ```
+addCat(redCatList); // NOK, because Cat is superclass of RedCat
+```
 
 ### Unbound
 - ` List<?> l`
@@ -546,4 +546,83 @@ List<String> listen[] = (LinkedList<String>[]) new List[5];
 - Typ wird nie festgelegt
 
 
+
+## Generische Methoden
+```java
+public class GenericMax {
+    public static <T extends Number & Comparable<T>> T max(T... nums) { // ... = varargs
+        if (nums.length == 0)
+            throw new UnsupportedOperationException("Does not support empty parameter list");
+        
+        T max = nums[0];
+        for (T n : nums)
+            if (max.compareTo(n) == -1)
+                max = n;
+        return max;
+    }
+    
+    public static void main(String[] args) {
+        Integer iArr[] = {0, 0, 1, -1, 0, -2, 3, -5, 5};
+        Integer imax = max(iArr);
+
+        Double dmax = max(-2.3, 4.555, Math.PI); // Keine casts noetig
+    }
+}
+```
+
+
+
+
 # Autoboxing
+```java
+public static void main() {
+    List<int> lint = new List<int>(); // NOK, da primitiv
+
+    Liste<Integer> lInteger = new Liste<Integer>();
+    lInteger.add(2);
+}
+```
+- Wrapper-Klassen
+```java
+int x = new Integer(5); // Autounboxing
+Integer y = 6;
+int z = new Integer(3) + 2;
+```
+    - Primitive Datentypen haben Wrapper-Klassen & sind in beide Richtungen typ-kompatibel
+
+    | PDT | Wrapperklasse |
+    | ----------- | ----------- |
+    | short | Short |
+    | int | Integer |
+    | long | Long |
+    | float | Float |
+    | double | Double |
+    | char | Character |
+    | boolean | Boolean |
+    | byte | Byte |
+
+
+# Collections & Map
+- Listen:
+```java
+ArrayList<String> list = new ArrayList<String>(); // Seq. Array
+LinkedList<String> list = new LinkedList<String>(); // doppelt verkettete Liste
+Vector<String> list = new Vector<String>(); // Seq. Array
+```
+- Maps (Paare aus Schlüssel vom Typ K und Werten von Typ V (Schlüssel eindeutig)):
+```java
+HashMap<String, String> map = new HashMap<String, String>(); // Hashtabelle, zufällige Reihenfolge
+LinkedHashMap<String, String> map = new LinkedHashMap<String, String>(); // Hashtabelle + doppelt verkettete Liste, eingefügte Reihenfolge
+TreeMap<String, String> map = new TreeMap<String, String>(); // Rot-Schwarz-Baum, sortierte Reihenfolge
+```
+- Sets (jede Referenz darf nur einmal vorkommen):
+```java
+HashSet<String> set = new HashSet<String>(); // Hashtabelle, keine Duplikate, zufällige Reihenfolge
+LinkedHashSet<String> set = new LinkedHashSet<String>(); // Hashtabelle + doppelt verkettete Liste, eingefügte Reihenfolge
+TreeSet<String> set = new TreeSet<String>(); // Rot-Schwarz-Baum, sortierte Reihenfolge
+```
+- Queues:
+```java
+LinkedList<String> queue = new LinkedList<String>(); // doppelt verkettete Liste
+PriorityQueue<String> queue = new PriorityQueue<String>(); // Heap
+```
