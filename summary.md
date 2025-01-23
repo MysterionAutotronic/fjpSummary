@@ -634,3 +634,74 @@ TreeSet<String> set = new TreeSet<String>();
 LinkedList<String> queue = new LinkedList<String>(); // doppelt verkettete Liste
 PriorityQueue<String> queue = new PriorityQueue<String>(); // Heap
 ```
+
+
+
+
+# Annotations
+- sind Metadaten & werden direkt vor das betreffende Element geschrieben
+- Nutzen: zusätzliche Semantik, Compile-Time Checks, Code Analyse durch Tools
+- Syntax Zucker - keine Funktion ohne IDE/Framework
+
+
+## Deprecated
+- markiert Methode als veraltet, nur für Kompatibilität vorhanden
+
+
+## Override
+- Überschreibt Elemente einer Superklasse
+```java
+public class Person {
+    @Override
+    public String getName() {
+        return this.name;
+    }
+}
+```
+
+
+## SuppressWarning
+- Unterdrücken Warnungen
+- `@SuppressWarnings("deprecation")`
+- `@SuppressWarnings({"unused","unchecked"})`
+
+
+## Selbstdefinierte Annotations
+Definition:
+```java
+public @interface Auditor {}
+
+// mit Attribut
+public @interface Copyright {
+    String value();
+}
+
+// mit Default Werten
+public @interface Bug { // extends Annotation
+    public final static String UNASSIGNED = "[N.N.]";
+    public static enum CONDITION { OPEN, CLOSED }
+    int id();
+    String synopsis();
+    String engineer() default UNASSIGNED;
+    CONDITION condition() default CONDITION.OPEN; // enum
+}
+```
+Nutzung:
+```java
+@Copyright("Steven Burger")
+public class Test { ... }
+```
+
+
+## Meta Annotationen in java.lang.annotation
+- Annotationen für Annotationen
+
+```
+    // Annotationen für Annotationen
+    // Documented: Dokumentation erzeugen
+    // Inherent: Annotation geerbt
+    // Retention: Beibehaltung der Annotation - SOURCE (nur Quellcode), CLASS (Bytecode), RUNTIME (Laufzeit über Reflection)
+        // -> mit import java.lang.annotation.RetentionPolicy;
+    // Target: Elemente, die annotiert werden können - TYPE (Class, Interface, Enums), FIELD (Attribute), CONSTRUCTOR, METHOD
+        // -> mit import java.lang.annotation.ElementType;
+```
