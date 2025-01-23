@@ -696,13 +696,6 @@ public class Test { ... }
 ## Meta Annotationen in java.lang.annotation
 - Annotationen für Annotationen
 
-```
-
-
-        // -> mit import java.lang.annotation.RetentionPolicy;
-    // Target: Elemente, die annotiert werden können - TYPE (Class, Interface, Enums), FIELD (Attribute), CONSTRUCTOR, METHOD
-        // -> mit ;
-```
 | Annotation | Bedeutung |
 | ----------- | ----------- |
 | `@Documented` | Docs erzeugen |
