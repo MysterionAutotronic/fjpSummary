@@ -3,37 +3,6 @@
 - iterable bzw. interfaces allgemein
 - comparator allgemein
 
-# Modifier
-```java
-abstract class // kann nicht instanziiert werden (z.B. nur als Oberklasse)
-abstract method // placeholder
-
-final var // Konstante
-final method() // verhindert Override
-final class // erlaubt keine Vererbung
-
-static var // existiert nur einmal im speicher (unabhängig von Instanzen)
-static method() // können nur auf static zugreifen, unabhängig von Instanzen
-static class // nur nested classes -> unabhängig von äußerer Instanz
-static {} // Wird nur beim ersten Laden der Klasse aufgeführt
-
-volatile var // wird von mehreren Threads geteilt (nicht atomar)
-
-synchronized method() // nur ein Thread kann gleichzeitig zugreifen
-```
-
-## Visibility
-
-```java
-public class // überall
-private class // innerhalb der Klasse
-protected class // innerhalb des Paketes und in Unterklassen
-```
-
-
-
-
-
 # Nested Classes
 ## Statische Attributklasse (static nested class)
 ```java
@@ -646,11 +615,11 @@ PriorityQueue<String> queue = new PriorityQueue<String>(); // Heap
 - **Methoden** von selbstdefinierten Annotation können keine Parameter haben und keine Exceptions auslösen
 
 
-## Deprecated
+## @Deprecated
 - markiert Methode als veraltet, nur für Kompatibilität vorhanden
 
 
-## Override
+## @Override
 - Überschreibt Elemente einer Superklasse
 ```java
 public class Person {
@@ -662,7 +631,7 @@ public class Person {
 ```
 
 
-## SuppressWarning
+## @SuppressWarning
 - Unterdrücken Warnungen
 - `@SuppressWarnings("deprecation")`
 - `@SuppressWarnings({"unused","unchecked"})`
@@ -935,12 +904,12 @@ gatherPersons().parallelStream()
 
 
 
-# Neuerungen in Java von 6 - 23
-## Neuerungen Java 6
+# Erneuerungen in Java von 6 - 23
+## Java 6
 - Diagnose und Management der VM mittels jconsole
 - Integration von Java DB (Java implementierte relationale Datenbank) auf Basis von Apache Derby
 
-## Neuerungen Java 7
+## Java 7
 ### Strings in switch-Anweisungen
 ```java
 private static final String IDLE = "idle";
@@ -990,7 +959,6 @@ try( BufferedReader br = new BufferedReader(new FileReader("test.txt")) ) {
     br.readLine();
 }
 catch(final IOException ex) {
-    System.out.println( " tryWith: " + ex );
 }
 ```
 
@@ -1000,4 +968,499 @@ Neu: Vereinfachte Schreibweise zu Instanziierung von Generics, Typ kann auf link
 ```java
 Map<String, List<Integer> > map = new HashMap<>();
 LinkedList<String> lls = new LinkedList<>();
+```
+
+
+## Java 9 & 10
+- Typ Inferenz:
+```java
+var string = "Hello, World!";
+var i = 42;
+for(var string : strings) {}
+```
+- `List.of("a", "b")`: immutable Liste
+
+## Java 11
+Typ Interferenz für Lambda Parameter: `Consumer<String> printer = (var s) -> System.out.println(s);`
+
+
+## Java 14
+Erweiterung switch Statement um Arrows Syntax:
+```java
+public String describeInt(int i) {
+    String str = "not set";
+    switch (i) {
+        case 1, 2 -> str = "one or two";
+        case 3 -> {
+            str = "three" + j;
+        }
+    }
+    return str;
+}
+```
+- erlaubt Rückgabewert mit switch statement
+
+Erweiterung switch Statement um yield:
+```java
+private static String describeInt(int i) {
+    return switch (i) {
+        case 1, 2: yield "one or two";
+        case 3: {
+            System.out.println();
+            yield "three";
+        } // kein ";" wegen Block
+        default: yield "...";
+    };
+
+    // Arrow Schreibweise
+    return switch (i) {
+    case 1, 2 -> "one or two";
+    case 3 -> {
+        System.out.println();
+        yield "three";
+    } // kein ";" wegen Block
+    default -> "...";
+    };
+}
+```
+- erlaubt Rückgabewert mit Seiteneffekte in einem Block
+
+
+## Java 15
+Text Blocks oder Raw Strings:
+```java
+String string = """
+        {
+            "typ": "json",
+            "inhalt": "Beispieltext"
+        }
+    """;
+```
+
+
+## Java 16
+instaceof mit Pattern Matching:
+```java
+// vorher
+if(obj instanceof String) {
+    String str = (String) obj;  // cast erforderlich
+    System.out.println(str.length());
+}
+
+if(obj instanceof String str) {
+    System.out.println(str.length());  // auto. cast
+}
+```
+
+
+## Java 17
+- Records: simplifizierte Form von Klassen
+- sind immutable
+- autom. Implementierungen von Methoden zum lesenden Zugriff, Konstruktor, toString(), equals(), hashCode()
+```java
+public record PersonRecord(String name, PersonRecord partner) {
+    public PersonRecord(String name) {
+        this(name, null);
+    }
+
+    public String getNameInUppercase() {
+        return name.toUpperCase();
+    }
+}
+```
+
+
+# JUnit
+- Framework Erstellung & Ausführung von Unit-Tests
+- Namenskoverntion: Testklasse fängt mit "Test"X an
+- Getter und Setter ohne Validierungen werden meist nicht getestet („If it’s too simple to break, don’t test it“)
+- Test-Driven Development (TDD): Testfälle vor Implementierung schreiben & testbares Design
+
+## Überprüfungsmethoden
+- `assertEquals(expected, actual)`: prüft auf Gleichheit
+    - bei `Object`: `x.equals(y)`
+    - bei prim. Datentypen: `x == y`
+    - Gleitkommazahl ist Toleranz erforderlich
+    - `assertEquals(expected, actual, () -> "Fehlermeldung")`
+- `assert(Not)Null(x)`
+- `assert(Not)Same(x,y)`
+    - test Objektreferenz selber
+- `assertTrue(x)`, `assertFalse(x)`
+    - bool
+
+
+## Fixture
+- `import org.junit.*`: weglassen von `@ort.junit` vor Fixtures
+- `@org.junit.Test`: Testmethoden
+- `@org.junit.BeforeEach`: Initialisierungscode vor jeder Testmethode
+- `@org.junit.AfterEach`: Aufräumcode nach jeder Testmethode
+- `@org.junit.BeforeAll`: einmaliger Initialisierungscode mit static Method
+```java
+import org.junit.*;
+
+@BeforeAll
+public static void setUpBeforeClass() throws Exception {
+    System.out.println("setUpBeforeClass");
+}
+```
+- `@org.junit.AfterAll`: einmaligen Aufräumcode
+```java
+import org.junit.*;
+
+@AfterAll
+public static void tearDownAfterClass() throws Exception {
+    System.out.println("tearDownAfterClass");
+}
+```
+- `@Disabled`: Test wird ignoriert
+    - `@Disabled("message")`
+- `@Displayname("name")`: für Console & Mouse Hover
+
+
+## Hierarchische Gliederung (Suites)
+Fügt alle Testmethoden mehrer Testklassen zusammen unter einer "Suite"
+```java
+import org.junit.*;
+
+@RunWith(Suite.class)
+@Suite.SuiteClasses({ TestAddition.class, TestSubtraction.class })
+public class TestSuite {}
+```
+
+
+## assertThat & Matchers
+- mit `assertThat` können sog. Matcher verwendet werden
+- Matcher: static methods in `org.hamcrest.Matcher` class like `is()`, `not()`, `hasItem()`, `containsString()`, ...
+
+```java
+import static org.hamcrest.*;
+import org.hamcrest.*;
+
+import static org.junit.*;
+import org.junit.*;
+
+assertThat(al, isA(ArrayList.class)); // Objektindentität
+assertThat(al, instanceOf(ArrayList.class)); // Vererbungshierarchie
+
+assertThat(x, is(3));
+assertThat(x, is(not(4)));
+assertThat(responseString,
+    either(containsString("color")).
+    or(containsString("colour"))
+);
+assertTrue(al.contains("abc")); // ohne Matcher
+assertThat(al, hasItem("abc")); // jetzt mit Matcher
+```
+
+
+## assertAll
+Gruppierung von Assertions
+```java
+import org.junit.*;
+
+@Test
+void groupedAssertions() {
+    // alle Assertions werden ausgeführt, auch wenn eine fehlschlägt
+    assertAll("addition",
+        () -> assertEquals(11, Addition.addiere(5, 6)),
+        () -> assertEquals(12, Addition.addiere(5, 7)));
+        
+
+    // Innerhalb des Codeblocks wird jedoch abgrebrochen
+    assertAll("both",
+        () -> {
+            assertEquals(1, Addition.addiere(1, -1));
+            // nachfolgendes wird nur ausgeführt, wenn vorherige Assertion erfolgreich
+            assertAll("addition", () -> assertEquals(3, Addition.addiere(1, 2)),
+            () -> assertEquals(3, Addition.addiere(1, 2)));
+        },
+        () -> {} // wird augseführt, auch wenn vorherige Assertion fehlschlägt
+    );
+}
+```
+
+## assertTimeout
+ohne Ergebnis:
+```java
+import org.junit.*;
+
+@Test
+void timeoutNotExceeded() {
+    assertTimeout(ofMinutes(2), () -> {
+        // task
+    }); // check if task takes less than 2 minutes
+}
+```
+mit String Ergebnis:
+```java
+import org.junit.*;
+
+@Test
+void timeoutNotExceededWithResult() { // succeds
+    String actualResult = assertTimeout(ofMinutes(2),
+        () -> { return "a result"; });
+    assertEquals("a result", actualResult);
+}
+```
+
+## assertThrows
+zum Abfangen & Prüfen von Exceptions:
+```java
+import org.junit.*;
+
+@Test
+void exceptionTesting() {
+    Throwable exception = assertThrows(IllegalArgumentException.class,
+        () -> { throw new IllegalArgumentException("a message"); });
+    
+    System.out.println("exception message: " + exception.getMessage());
+    assertEquals("a message", exception.getMessage());
+}
+```
+
+## Repeated Tests
+```java
+import org.junit.*;
+
+@RepeatedTest(10)
+void repeatedTest() {
+    ...
+}
+
+@RepeatedTest(value = 5, name = "Wiederholung {currentRepetition} von {totalRepetitions}")
+void repeatedTestInGerman() {
+    ...
+}
+```
+
+## Parameterized Test
+- wiederholtes Ausführen des Testmethode mit verschiedenen Werten
+
+Value Source:
+```java
+import org.junit.*;
+
+@ParameterizedTest
+@ValueSource(strings = { "racecar", "radar", "able was I ere I saw elba" })
+void palindromes(String candidate) {
+    assertTrue(isPalindrome(candidate));
+}
+
+@ParameterizedTest
+@ValueSource(ints = { 1, 2, 3 })
+void testWithValueSource(int argument) {
+    assertTrue(argument > 0 && argument < 4);
+}
+```
+Enum Source:
+```java
+import org.junit.*;
+
+enum TimeUnit {
+    MONTHS, WEEKS, DAYS, HOURS, MINUTES, SECONDS, MILLISECONDS, NANOSECONDS
+}
+
+@ParameterizedTest
+@EnumSource(TimeUnit.class)
+void testWithEnumSource(TimeUnit timeUnit) {
+    assertNotNull(timeUnit);
+}
+
+@ParameterizedTest
+@EnumSource(value = TimeUnit.class, mode = Mode.EXCLUDE, names = { "WEEKS", "DAYS", "HOURS" })
+void testWithEnumSourceExclude(TimeUnit timeUnit) {
+    assertFalse(EnumSet.of(TimeUnit.DAYS, TimeUnit.HOURS).contains(timeUnit));
+    assertTrue(timeUnit.name().length() > 5);
+}
+```
+- `mode = Mode.EXCLUDE`: Ausschluß bestimmter Enum-Werte
+- `names = { "WEEKS", "DAYS", "HOURS" }`: Listet die Enum-Werte, die ausgeschlossen werden sollen (in diesem Fall WEEKS, DAYS und HOURS)
+
+Method Source:
+```java
+@ParameterizedTest
+@MethodSource("stringProvider")
+void testWithSimpleMethodSource(String argument) {
+    assertNotNull(argument);
+}
+static Stream<String> stringProvider() { return Stream.of("foo", "bar"); }
+
+@ParameterizedTest
+@MethodSource("stringIntAndListProvider")
+void testWithMultiArgMethodSource(String str, int num, List<String> list) {
+    assertEquals(3, str.length());
+    assertTrue(num >=1 && num <=2);
+    assertEquals(2, list.size());
+}   
+static Stream<Arguments> stringIntAndListProvider() {
+    return Stream.of(
+        Arguments.of("foo", 1, Arrays.asList("a", "b")),
+        Arguments.of("bar", 2, Arrays.asList("x", "y"))
+    );
+}
+```
+
+
+
+
+# Robustheit & Performance
+- Zugriffsrechte möglichst restriktiv setzen
+
+## Modifier
+```java
+abstract class // kann nicht instanziiert werden (z.B. nur als Oberklasse)
+abstract method // placeholder
+
+final int var // immutable, Konstante ohne Klasse
+var = 5; // nur eine Zuweisung erlaubt
+final method() // verhindert Override
+final class // erlaubt keine Ableitung
+void method(final int nr) // keine Parameteränderung
+
+static var // existiert nur einmal im Speicher (unabhängig von Instanzen)
+static method() // können nur auf static zugreifen, unabhängig von Instanzen
+static class // nur nested classes -> unabhängig von äußerer Instanz
+static {} // Wird nur beim ersten Laden der Klasse aufgeführt
+
+volatile var // wird von mehreren Threads geteilt (nicht atomar)
+
+synchronized method() // nur ein Thread kann gleichzeitig zugreifen
+```
+
+## Visibility
+```java
+public class // überall
+private class // innerhalb der Klasse
+protected class // innerhalb des Paketes und in Unterklassen
+package class // innerhalb Package
+```
+
+
+## Konstanten
+- **Konstanten** := Als `static final` deklarierte Attribute
+- Konstanten primitiver Datentypen werden zur Compilezeit substituiert
+- per Konvetion uppercase
+- alle Instanzen einer Klasse teilen sich diese Konstanten
+
+```java
+class A {
+    public final static int KONST = 4711;
+} 
+
+public static void main() {
+    final int KONST = 4711;
+}
+
+// source code:
+public void print() {
+    System.out.println(A.KONST);
+}
+
+// kompiliert:
+public void print() {
+    System.out.println(4711);
+}
+```
+
+
+## Immutable Klassen
+- Objekte, die nach der Instanziierung nicht mehr verändert werden können (z.B. String, Integer (Wrapperklassen), BigDecimal, ...)
+- Erstellung:
+    - Klasse `final` setzen
+    - Attribute `private final` setzen
+    - keiner Setter
+    - DeepCopy Konstruktor
+    - Getter liefern DeepCopy
+- Vorteile: 
+    - Zeitgleicher Zugriff unproblematisch (Threadsicher)
+    - guter Schlüssel fpr Maps & HashSet
+    - Caching über Factory Pattern
+- Nachteile:
+    - Ressourcenvebrauche wegen neues Objekt & DeepCopies
+    - viele Objekte
+    - schlecht für große (da DeepCopies) & oft sich verändernde Objekte.
+
+### Collections
+`final` bei Collections:
+```java
+final List<String> list = new ArrayList<>();
+list.add("rot"); // Inhalt kann geändert werden
+list = new LinkedList<>(); // Fehler: Referenz kann nicht geändert werden
+```
+Unveränderliche Collections (Inhalt unveränderlich):
+```java
+public final static Set<String> COLORS; // einmalige Initialisierung erlaubt
+static {
+    Set<String> temp = new HashSet<String>();
+    temp.add("rot");
+    temp.add("gruen");
+    temp.add("blau");
+
+    COLORS = java.util.Collections.unmodifiableSet(temp); // Set, List, Map etc.
+    COLORS.add("gelb"); // Fehler: Inhalt kann nicht geändert werden
+}
+```
+
+
+## Gleichheit vs. Identität
+- `==`: Compares the references of two objects to check if they point to the same memory location
+- `equals()`: Compares the contents of two objects to check if they are logically equivalent
+
+Beispiel:
+```java
+String s1 = "text";
+String s2 = s1;
+String s3 = "text";
+
+s1 == s2; // true, same reference
+s1 == s3; // false, different reference
+s1.equals(s3); // true, same text
+```
+
+```java
+class A {
+    private int a;
+    public A(int a) {
+        this.a = a;
+    }
+}
+
+A a1 = new A(47);
+A a2 = a1;
+A b = new A(11);
+
+a1 == a2; // true -> same reference
+a1.equals(a2); // true -> same refrence -> same data
+a1 == b; // false
+a1.equals(b); // false
+
+A a3 = new A(47);
+a1 == a3; // false
+a1.equals(a3); // false, da Object.equals implementiert werden muss
+```
+
+### equals() Implementierung
+- Contract:
+    - Reflexivität: `x.equals(x)` ist immer true
+    - Symmetrie: `x.equals(y)` == `y.equals(x)`
+    - Transitivität: `x.equals(y)` ∧ `y.equals(z)` ⇒ `x.equals(z)`
+    - Konsistenz: `x.equals(y)` liefert immer gleiches Ergebnis, solange x und y nicht verändert werden.
+    - `x.equals(null)` ist immer false
+- `equals()` muss in allen Subklassen, die zusätzliche Attribute hinzufügen, überschreiben werden
+
+`equals()` override:
+```java
+@Override
+public boolean equals(Object other) { // Parameter muss vom Typ Object sein
+    if (this == other) 
+        // other != null && null != other nicht notwending
+        return true;
+    if (!(other instanceof A))
+        return false;
+    A a = (A) other;
+    return a.a == this.a;
+}
+
+
+
 ```
