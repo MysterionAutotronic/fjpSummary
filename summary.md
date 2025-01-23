@@ -1443,7 +1443,7 @@ a1.equals(a3); // false, da Object.equals implementiert werden muss
 - Contract:
     - Reflexivität: `x.equals(x)` ist immer true
     - Symmetrie: `x.equals(y)` == `y.equals(x)`
-    - Transitivität: `x.equals(y)` ∧ `y.equals(z)` ⇒ `x.equals(z)`
+    - Transitivität: `x.equals(y)` ^ `y.equals(z)` => `x.equals(z)`
     - Konsistenz: `x.equals(y)` liefert immer gleiches Ergebnis, solange x und y nicht verändert werden.
     - `x.equals(null)` ist immer false
 - `equals()` muss in allen Subklassen, die zusätzliche Attribute hinzufügen, überschreiben werden
