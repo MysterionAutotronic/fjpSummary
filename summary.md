@@ -278,6 +278,43 @@ public enum Months {
 ## Generics
 - Generics erlauben es uns, eine Klasse für verschiedene Datentypen zu verwenden
 
+### Initialisierung
+- nicht erlaub:
+    - `List<String> list = new List<String>();`
+    - `List list = new List();`
+    - `LinkedList<String> list = new List<String>();`
+    - `LinkedList list = new List();`
+- funktioniert, da Interface (entweder LinkedList oder ArrayList ohne downcast)
+
+#### Imports
+```java
+import java.util.LinkedList;
+import java.util.ArrayList;
+import java.util.List;
+```
+
+#### ArrayList<> (mutable)
+```java
+List<String> sl = new ArrayList<>(Arrays.asList("ich", "bin"));
+sl.add("nicht"); // allowed
+sl.set(1, "nicht"); // allowed
+```
+
+#### Mit anonymer Klasse
+```java
+List<String> stringListe = new ArrayList<>() {{
+    add("ich"); add("bin"); add("doch");
+    add("nicht"); add("bloed ;-)");
+}};
+```
+
+#### List.of() (immutable)
+```java
+List<String> sl = List.of("ich", "bin", "doch", "nicht", "bloed");
+```
+- ab JDK 9
+
+
 ### nicht-parametrisierte Verwendung (raw type)
 ```java
 LinkedList stringListe = new LinkedList(); // generics version
@@ -296,8 +333,6 @@ for (int i=0; i<stringListe.size(); i++) {
 
 ### parametrisierte Verwendung
 ```java
-import java.util.LinkedList;
-
 LinkedList<String> stringListe = new LinkedList<String>();
 stringListe.add("Hello world"); // OK
 stringListe.add(new Integer( 42 )); // Compiler-NOK
@@ -307,6 +342,8 @@ String s = stringListe.get(0); // kein Cast noetig!
 
 #### Beispiel (Iterable Interface)
 ```java
+import java.util.Iterator;
+
 class List<T> implements Iterable<T> {
     public Iterator<T> iterator() {
         return new Iterator<T>() {
@@ -331,29 +368,6 @@ class List<T> implements Iterable<T> {
 - Schachtelung von Typen: `List<List<String>> var = new List<List<String>>();`
 - mehrere Typ-Parameter: `public interface Map<K, V> {...}`
 
-### Initialisierung
-- `List<String> liste = new List<String>();` funktioniert nicht, da abstract (entweder LinkedList oder ArrayList)
-
-#### ArrayList<> (mutable)
-```java
-List<String> sl = new ArrayList<>(Arrays.asList("ich", "bin"));
-sl.add("nicht"); // allowed
-sl.set(1, "nicht"); // allowed
-```
-
-#### Mit anonymer Klasse
-```java
-List<String> stringListe = new ArrayList<>() {{
-    add("ich"); add("bin"); add("doch");
-    add("nicht"); add("bloed ;-)");
-}};
-```
-
-#### List.of() (immutable)
-```java
-List<String> sl = List.of("ich", "bin", "doch", "nicht", "bloed");
-```
-- ab JDK 9
 
 ### Eigene Generic Klasse
 ```java
@@ -378,3 +392,159 @@ class GenKlasse<T> {
 
 
 ### Generics & Vererbung
+- A <- B: `class B extends A`
+    - A ist Supertyp
+    - B lässt sich zu A upcasten
+- `List<a> <- List<b>?`:
+    ```java
+    List<B> lb = new List<B>();
+    List<A> la = lb; // NOK
+    ```
+-  `List <-> List<B>` (bidirektional):
+    ```java
+    ArrayList list = new ArrayList();
+    ArrayList<String> s_list = list;
+    s_list.add("hi");
+
+    ArrayList<Integer> i_list = list;
+    i_list.add(new Integer(3));
+
+    int len = 0;
+    for (String s : s_list) {
+        len += s.length(); // Runtime: Cast Integer --> String!!!
+    }
+    ```
+    - raw types vermeiden & nicht mischen mit generics
+
+
+### Array von Generics
+```java
+List<String> listen[] = new LinkedList<String>[5]; // error
+List<String> listen[] = (LinkedList<String>[]) new List[5];
+```
+
+
+### Bounds
+#### Beschränkung des Parametertyps
+- `public class List<T extends Figur> { }`
+    - Figur kann Klasse, abstrakte Klasse, Interface (trotz extends) sein
+    - Erasure ersetzt T durch Figur
+- `public class X<T extends Number & Comparable & Iterator> { }`
+    - Mehrfachbound
+
+### Wildcards
+#### Upper Bound
+- Ziel: Liste spezifizieren, die mit Number oder einer zu Number typ-kompatiblen Klasse (Float, Integer, ...) parametrisiert ist (upper bound)
+- Nutzung: Nur Lesezugriff auf Elemente & als Parametercheck. Kein Schreibzugriff
+- Kovarianz: Kann Spezialisierung verwenden (muss nicht)
+- `GenTyp<? extends Number> <- GenTyp<Integer>`
+- Initialisierung:
+    ```java
+    List <? extends Number> dExNumber;
+    dExNumber = new List<Number>(); // OK
+    dExNumber = new List<Integer>(); // OK
+    dExNumber = new List<String>(); // Type Mismatch
+    dExNumber = new List<Object>(); // Type Mismatch
+    dExNumber = new List(); // Warning, because of raw type
+    ```
+- Lesezugriff:
+    ```java
+    dExNumber = new List<Integer>(); // OK
+    for( Number n : dExNumber ); // OK, da Superklasse
+    for( Integer i : dExNumber ); // NOK, da Typ nicht bekannt
+    ```
+- Schreibzugriff:
+    ```java
+    dExNumber.add( new Integer(3) ); // NOK
+    dExNumber.contains( new Integer(3) ); // NOK
+
+    Number n = new Integer(3);
+    dExNumber.add(n); // NOK
+
+    dExNumber.add(null); // OK
+    ```
+    - kein Schreibzugriff, da Typ nicht bekannt (kann Integer, Float, ... sein)
+    ```java
+    List<? extends Integer> dExInteger = new List<Integer>();
+    for(Integer i : dExInteger); // OK
+    dExInteger.add( new Integer(3) ); // NOK, da Typ unbekannt
+    ```
+- usecase - lesende Übergabe:
+    ```java
+    public static double sum(List<? extends Number> numberlist) {
+        double sum = 0.0;
+        for (Number n : numberlist) {
+            sum += n.doubleValue();
+        }
+        return sum;
+    }
+
+    public static void main(String args[]) {
+        List<Integer> integerList = Arrays.asList(1, 2, 3);
+        System.out.println("sum = " + sum(integerList));
+
+        List<Double> doubleList = Arrays.asList(1.2, 2.3, 3.5);
+        System.out.println("sum = " + sum(doubleList));
+    }
+    ```
+
+#### Lower Bound
+- Ziel: Liste spezifizieren, die mit Integer oder einem Supertyp von Integer parametrisiert ist (lower bound)
+- Supertyp kann auch Interface sein
+- Nutzung: Parameterchecks
+- Kontravarianz: Kann allgemeineren Typ verwenden
+- `GenTyp<? super Integer> <- GenTyp<Number>`
+- Initialisierung:
+    ```java
+    List<? super Integer> dSupInt;
+    dSupInt = new ArrayList<Number>(); // OK
+    dSupInt = new List<Integer>(); // OK
+    dSupInt = new List<String>(); // Type Mismatch
+    dSupInt = new List<Object>(); // OK, because Object is super type of Integer
+    dSupInt = new List(); // Warning, because of raw type
+    ```
+- Initialisierung Interfaces:
+    ```java
+    dSupInt = new List<Serializable>(); // OK, da Number das Interface implementiert
+    dSupInt = new List<Comparable<Number>>(); // NOK, da Integer nicht Comparable implementiert
+    dSupInt = new List<Comparable<Integer>>(); // OK, da Integer Comparable implementiert
+    ```
+- Lesezugriff:
+    ```java
+    for(Number n : dSupInt); // NOK
+    for(Object o : dSupInt); // OK
+    ```
+    - kein Lesezugriff, da Typ unbekannt & Liste könnte `Object` enthalten
+- Schreibzugriff:
+    ```java
+    dSupInt.add( new Integer(3) ); // OK, da mindestens Integer
+
+    Number ni = new Integer(3); // upcast
+    dSupInt.add(ni); // NOK
+
+    dSupInt.add(null); // OK
+    ```
+- usecase - schreibende Übergabe
+    ```java
+    // usecase example - schreibende Übergabe
+    public static void addCat(List<? super Cat> catList) {
+        catList.add(new RedCat());
+    }
+
+    List<Animal> animalList= new ArrayList<Animal>();
+    List<Cat> catList= new ArrayList<Cat>();
+    List<RedCat> redCatList= new ArrayList<RedCat>();
+
+    addCat(catList);
+    addCat(animalList); // animal is superclass of Cat
+
+    addCat(redCatList); // NOK, because Cat is superclass of RedCat
+    ```
+
+#### Unbound
+- ` List<?> l`
+- readonly
+- Typ wird nie festgelegt
+
+
+### Autoboxing
