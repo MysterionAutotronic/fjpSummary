@@ -822,3 +822,71 @@ LinkedList<String> lls = new LinkedList<>();
 
 
 # Lambdas
+- namenslose anonyme Methoden
+- kürzer als Verwendung von anonymer inneren Klasse
+- `<Parameterliste> -> <Ausdruck> | <Block>`
+- Parameter sind optional
+```java
+(a, b) -> a + b;
+(a, b) -> {   
+    return a + b;
+}
+() -> {
+    System.out.println("Hello World");
+}
+```
+
+## Predicate
+```java
+import java.util.function.Predicate;
+
+@FuntioncalInterface
+interface Predicate<T> {
+    boolean test(T t);
+}
+Predicate<Person> checkAlter = p -> p.getAlter() >= 18;
+```
+
+Nutzung:
+```java
+void example(Predicate<Person> pred) {
+    if(pred.test(pElem)) {
+        ...
+    }
+}
+
+// mit anonymer inneren Klasse
+example(
+    new Predicate<Person> () {
+        public boolean test(Person p) {
+            return p.getAge() >= 17;
+        }
+    }
+);
+
+// mit Lambda
+example(p -> p.getAge() >= 17);
+```
+
+
+## Consumer
+```java
+import java.util.function.Consumer;
+
+@FunctionalInterface
+interface Consumer<T> {
+    void accept(T t);
+}
+Consumer<Person> printPerson = p -> System.out.println(p);
+```
+Nutzung:
+```java
+void example(Predicate<Person> pred, Consumer<PhoneNumber> con) {
+    if(pred.test(pElem)) {
+        con.accept(pElem.getNumer());
+    }
+}
+
+example(p -> p.getAge() >= 17, num -> {doSmthWithNum(num); });
+```
+
