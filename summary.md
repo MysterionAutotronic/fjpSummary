@@ -1446,21 +1446,194 @@ a1.equals(a3); // false, da Object.equals implementiert werden muss
     - Transitivität: `x.equals(y)` ^ `y.equals(z)` => `x.equals(z)`
     - Konsistenz: `x.equals(y)` liefert immer gleiches Ergebnis, solange x und y nicht verändert werden.
     - `x.equals(null)` ist immer false
-- `equals()` muss in allen Subklassen, die zusätzliche Attribute hinzufügen, überschreiben werden
+- `equals()` muss in allen Subklassen, die zusätzliche Attribute hinzufügen, überschrieben werden
 
 `equals()` override:
 ```java
 @Override
 public boolean equals(Object other) { // Parameter muss vom Typ Object sein
     if (this == other) 
-        // other != null && null != other nicht notwending
+        // (other != null) && (null != other) nicht notwendig
         return true;
     if (!(other instanceof A))
         return false;
     A a = (A) other;
     return a.a == this.a;
 }
+```
+
+Tipp zu String.equals():
+```java
+public void f(String s) {
+    if (s.equals("<String>")) {} // wenn s null ->  NullPointerException
+    if ("<String>".equals(s)) {} // robuster, da NullPointerException vermieden wird
+}
+```
+
+- equals darf nicht auf Arrays aufgerufen werden sondern: `java.util.Arrays.equals(Object[], Object[])`
+
+
+## HashCode
+- `hashcode()` sollte mit `equals()` auch überschrieben werden
+- Definition: gleicher HashCode für gleiche Objekte & unterschiedl. HashCodes für unterschiedl. Objekte -> sonst Probleme mit Maps, Sets etc.
+```java
+public int hashCode() {
+    int result = 17; // Basiswert
+    result = 37 * result + a; // Hashcode für das Feld `a`
+    return result;
+}
+```
+
+- `hashCode()` muss in allen Subklasse, die zusätzliche Attribute hinzufügen, überschrieben werden
+```java
+public int hashCode() {
+    int result = super.hashCode(); // Basis-Hashcode von `AWithEquals`
+    result = 37 * result + b; // Hashcode für das neue Feld `b`
+    return result;
+}
+```
+
+Beispiel Nutzung:
+```java
+Map<BWithEquals, String> map = new HashMap<>();
+BWithEquals b1 = new BWithEquals(2, 5);
+BWithEquals b2 = new BWithEquals(2, 5);
+
+map.put(b1, "Wert1");
+map.get(b2); // Funktioniert nur korrekt, wenn `hashCode()` und `equals()` konsistent sind
+map.put(b2, "Wert2"); // will override value
+```
+
+
+## equals() vs. Comparable.compareTo()
+- Vergleichbare Objekte können Comparable Interface erfüllen
+- sollte nicht für Vergleich auf Gleichheit verwendet werden, sondern nur Sortierung o. allg. Elemente kleiner/größer
+
+```java
+class Test implements Comparable<Test> {
+    int d;
+
+    @Override
+    public int compareTo(T other) {
+        if(this.d < o.d) {
+            return - 1;
+        }
+        else if(this.d > o.d) {
+            return 1;
+        }
+        return 0;
+
+        // alternative for easy cases:
+        return this.d - o.d;
+    }
+}
+
+```
+
+
+## Comparable vs. Comparator
+- Comparable is used for natural ordering/comparision within the class
+- Comparator defines external logic
+
+```java
+import java.util.Comparator;
+
+class TestCompare implements Comparator<Test> {
+    public int compare(Test o1, Test o2) {
+        if(o1.d < o2.d) {
+            return - 1;
+        }
+        else if(o1.d > o2.d) {
+            return 1;
+        }
+        return 0;
+
+        // alternative for easy cases:
+        return o1.d - o2.d;
+    }
+}
+```
+
+## Exceptions
+- spezifisch wie möglich
+- pro Exception eigener catch-block
+```java
+try { ... }
+catch (BindException e) {...}
+catch (ConnectException e) {...}
+...
+```
+- Nicht zuviele Exception Typen definieren -> Alternativ: Error Codes
+- möglichst genau Fehlerbeschreibung
+
+
+### Exception vs. RuntimeException 
+- **Exception**: Checked Exception, die zur Compilezeit bekannt sind -> sollte behandelt werden
+- **RuntimeException**: Unchecked Exception, die zur Laufzeit bekannt sind -> sollte nicht behandelt werden (z.B. NullPointerException)
+
+
+### Custom Exception
+```java
+public class AnwendungsException extends Exception {
+     // muss einen Konstruktur besitzen
+    public AnwendungsException(String msg, Throwable t) {
+        super(msg, t);
+    }
+}
+```
+
+
+### Exception Chaining
+```java
+public void f() throws AnwendungsException {
+    try {
+        g();
+    } catch (IOException e) {
+        ex.printStackTrace(); // zeigt, dass AnwendungsException von einer ArrayIndexOutOfBoundsAcception ausgelöst wurde
+        throw new AnwendungsException("Fehler in g()", e);
+    }
+}
+```
+
+### finaly
+- finaly-Block wird immer ausgeführt
+- Aufräumarbeiten
+Verhalten:
+```java
+try { return 0; }
+finally { return 1; } // 1 wird zurückgegeben
+
+int i;
+try { i = 0; return i; }
+finally { i = 1; } // 0 wird zurückgegeben, da Rückgabewert bereits auf Stack liegt
+```
+
+## Währungen
+- Gleitpunktzahlen (float & double) speichern Werte mit begrenzter Präzision -> Rundungsfehler:
+```java
+double x = 0.1;
+double y = 0.2;
+(x + y); // 0.30000000000000004
+
+float a = 0.1f;
+float b = 0.2f;
+(a * b); // 0.020000001
+```
+- Lösung - ganze Zahlen verwenden & Komma seperat speichern:
+- Alternativlösung - BigDecimal:
+```java
+    BigDecimal x = new BigDecimal("0.1");
+    BigDecimal y = new BigDecimal("0.2");
+    x.add(y); // Korrekt: 0.3
+
+```
 
 
 
+
+
+# Performance
+
+
+```java
 ```
