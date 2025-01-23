@@ -724,14 +724,14 @@ public class BugRiddled {
 # Lambdas
 - namenslose anonyme Funktionen
 - kürzer als Verwendung von anonymer inneren Klasse
-- Prametrisierung von Verhalten
+- Parametrisierung von Verhalten
 - Lambda Ausdrücke werden zu funktionalen Interfaces umgewandelt
 - `<Parameterliste> -> <Ausdruck> | <Block>`
 - Parameter sind optional
 ```java
 (a, b) -> a + b; // Expression Lambda
 (a, b) -> {   
-    return a + b; // Statement Lamda
+    return a + b; // Statement Lambda
 }
 () -> {
     System.out.println("Hello World");
@@ -743,7 +743,7 @@ public class BugRiddled {
 ```java
 import java.util.function.Predicate;
 
-@FuntioncalInterface
+@FunctionalInterface
 interface Predicate<T> {
     boolean test(T t);
 }
@@ -788,7 +788,7 @@ Beispiel:
 ```java
 void example(Predicate<Person> pred, Consumer<PhoneNumber> con) {
     if(pred.test(pElem)) {
-        con.accept(pElem.getNumer());
+        con.accept(pElem.getNumber());
     }
 }
 
@@ -841,13 +841,13 @@ interface BinaryOperator<T> {
 
 ## forEach
 - Iteriert über alle Elemente, die Iterable implementiert z.B. Collections
-- erwarter Consumer Interface
+- erwarteter Consumer Interface
 ```java
 void forEach(Consumer action)
 list.forEach(p -> System.out.println(p));
 
 /* Referenzen auf Funktionen ab Java 8 */
-list.forEach(Systen.out::println);
+list.forEach(System.out::println);
 ```
 
 ## Streams
@@ -890,7 +890,7 @@ list.stream()
 
 ### Parallel Streams
 - mehrere Cores nutzen
-- Vorraussetzung: unabhängig von der Reihenfolge & keine Seiteneffekte
+- Voraussetzung: unabhängig von der Reihenfolge & keine Seiteneffekte
 - Rückgabe Reihefolge der Elemente kann sich ändern
 
 Beispiel:
@@ -1072,7 +1072,7 @@ public record PersonRecord(String name, PersonRecord partner) {
 
 # JUnit
 - Framework Erstellung & Ausführung von Unit-Tests
-- Namenskoverntion: Testklasse fängt mit "Test"X an
+- Namenskonvention: Testklasse fängt mit "Test"X an
 - Getter und Setter ohne Validierungen werden meist nicht getestet („If it’s too simple to break, don’t test it“)
 - Test-Driven Development (TDD): Testfälle vor Implementierung schreiben & testbares Design
 
@@ -1118,7 +1118,7 @@ public static void tearDownAfterClass() throws Exception {
 
 
 ## Hierarchische Gliederung (Suites)
-Fügt alle Testmethoden mehrer Testklassen zusammen unter einer "Suite"
+Fügt alle Testmethoden mehrerer Testklassen zusammen unter einer "Suite"
 ```java
 import org.junit.*;
 
@@ -1139,14 +1139,14 @@ import org.hamcrest.*;
 import static org.junit.*;
 import org.junit.*;
 
-assertThat(al, isA(ArrayList.class)); // Objektindentität
+assertThat(al, isA(ArrayList.class)); // Objektidentität
 assertThat(al, instanceOf(ArrayList.class)); // Vererbungshierarchie
 
 assertThat(x, is(3));
 assertThat(x, is(not(4)));
 assertThat(responseString,
     either(containsString("color")).
-    or(containsString("colour"))
+    or(containsString("color"))
 );
 assertTrue(al.contains("abc")); // ohne Matcher
 assertThat(al, hasItem("abc")); // jetzt mit Matcher
@@ -1166,7 +1166,7 @@ void groupedAssertions() {
         () -> assertEquals(12, Addition.addiere(5, 7)));
         
 
-    // Innerhalb des Codeblocks wird jedoch abgrebrochen
+    // Innerhalb des Codeblocks wird jedoch abgebrochen
     assertAll("both",
         () -> {
             assertEquals(1, Addition.addiere(1, -1));
@@ -1174,7 +1174,7 @@ void groupedAssertions() {
             assertAll("addition", () -> assertEquals(3, Addition.addiere(1, 2)),
             () -> assertEquals(3, Addition.addiere(1, 2)));
         },
-        () -> {} // wird augseführt, auch wenn vorherige Assertion fehlschlägt
+        () -> {} // wird ausgeführt, auch wenn vorherige Assertion fehlschlägt
     );
 }
 ```
@@ -1196,7 +1196,7 @@ mit String Ergebnis:
 import org.junit.*;
 
 @Test
-void timeoutNotExceededWithResult() { // succeds
+void timeoutNotExceededWithResult() { // succeeds
     String actualResult = assertTimeout(ofMinutes(2),
         () -> { return "a result"; });
     assertEquals("a result", actualResult);
@@ -1273,7 +1273,7 @@ void testWithEnumSourceExclude(TimeUnit timeUnit) {
     assertTrue(timeUnit.name().length() > 5);
 }
 ```
-- `mode = Mode.EXCLUDE`: Ausschluß bestimmter Enum-Werte
+- `mode = Mode.EXCLUDE`: Ausschluss bestimmter Enum-Werte
 - `names = { "WEEKS", "DAYS", "HOURS" }`: Listet die Enum-Werte, die ausgeschlossen werden sollen (in diesem Fall WEEKS, DAYS und HOURS)
 
 Method Source:
@@ -1339,7 +1339,7 @@ package class // innerhalb Package
 ## Konstanten
 - **Konstanten** := Als `static final` deklarierte Attribute
 - Konstanten primitiver Datentypen werden zur Compilezeit substituiert
-- per Konvetion uppercase
+- per Konvention uppercase
 - alle Instanzen einer Klasse teilen sich diese Konstanten
 
 ```java
@@ -1376,7 +1376,7 @@ public void print() {
     - guter Schlüssel fpr Maps & HashSet
     - Caching über Factory Pattern
 - Nachteile:
-    - Ressourcenvebrauche wegen neues Objekt & DeepCopies
+    - Ressourcenverbrauch wegen neues Objekt & DeepCopies
     - viele Objekte
     - schlecht für große (da DeepCopies) & oft sich verändernde Objekte.
 
@@ -1430,7 +1430,7 @@ A a2 = a1;
 A b = new A(11);
 
 a1 == a2; // true -> same reference
-a1.equals(a2); // true -> same refrence -> same data
+a1.equals(a2); // true -> same reference -> same data
 a1 == b; // false
 a1.equals(b); // false
 
