@@ -3,7 +3,6 @@
 - iterable bzw. interfaces allgemein
 
 # Modifier
-
 ```java
 abstract class // kann nicht instanziiert werden (z.B. nur als Oberklasse)
 abstract method // placeholder
@@ -186,8 +185,8 @@ class LazyInitIII {
 
 
 
-## for-Schleifen
-### old school
+# for-Schleifen
+## old school
 ```java
 int a[] = 1, 2, 3, 4, 5;
 int sum = 0;
@@ -197,7 +196,7 @@ for(int i = 0; i < a.length; i++) {
 }
 ```
 
-### forEach (neu)
+## forEach (neu)
 ```java
 int a[] = 1, 2, 3, 4, 5;
 int sum = 0;
@@ -211,8 +210,8 @@ for (int val : a) {
 
 
 
-## Varargs
-### Variable Parameterliste
+# Varargs
+## Variable Parameterliste
 ```java
 public static int sum(int... v) {
     int sum = 0;
@@ -234,8 +233,8 @@ public static void main() {
 - Nur letzter Formalparameter darf Vararg-Parameter sein
 
 
-## Aufzählung (enum)
-### Definition
+# Aufzählung (enum)
+## Definition
 ```java
 enum Seasons {
     SPRING, SUMMER, AUTUMN, WINTER;
@@ -255,7 +254,7 @@ enum Seasons {
 }
 ```
 
-### Definition mit Konstruktor
+## Definition mit Konstruktor
 ```java
 public enum Months {
     // Init mit Konstruktor
@@ -275,10 +274,10 @@ public enum Months {
 ```
 
 
-## Generics
+# Generics
 - Generics erlauben es uns, eine Klasse für verschiedene Datentypen zu verwenden
 
-### Initialisierung
+## Initialisierung
 - nicht erlaub:
     - `List<String> list = new List<String>();`
     - `List list = new List();`
@@ -286,21 +285,21 @@ public enum Months {
     - `LinkedList list = new List();`
 - funktioniert, da Interface (entweder LinkedList oder ArrayList ohne downcast)
 
-#### Imports
+### Imports
 ```java
 import java.util.LinkedList;
 import java.util.ArrayList;
 import java.util.List;
 ```
 
-#### ArrayList<> (mutable)
+### ArrayList<> (mutable)
 ```java
 List<String> sl = new ArrayList<>(Arrays.asList("ich", "bin"));
 sl.add("nicht"); // allowed
 sl.set(1, "nicht"); // allowed
 ```
 
-#### Mit anonymer Klasse
+### Mit anonymer Klasse
 ```java
 List<String> stringListe = new ArrayList<>() {{
     add("ich"); add("bin"); add("doch");
@@ -308,14 +307,14 @@ List<String> stringListe = new ArrayList<>() {{
 }};
 ```
 
-#### List.of() (immutable)
+### List.of() (immutable)
 ```java
 List<String> sl = List.of("ich", "bin", "doch", "nicht", "bloed");
 ```
 - ab JDK 9
 
 
-### nicht-parametrisierte Verwendung (raw type)
+## nicht-parametrisierte Verwendung (raw type)
 ```java
 LinkedList stringListe = new LinkedList(); // generics version
 stringListe.add("Java");
@@ -331,7 +330,7 @@ for (int i=0; i<stringListe.size(); i++) {
     - `get()` gibt `Object` zurück (keine Typsicherheit)
     - casten notwendig --> kann zu ClassCastException führen
 
-### parametrisierte Verwendung
+## parametrisierte Verwendung
 ```java
 LinkedList<String> stringListe = new LinkedList<String>();
 stringListe.add("Hello world"); // OK
@@ -340,7 +339,7 @@ String s = stringListe.get(0); // kein Cast noetig!
 ```
 - Typsicherheit
 
-#### Beispiel (Iterable Interface)
+### Beispiel (Iterable Interface)
 ```java
 import java.util.Iterator;
 
@@ -369,7 +368,7 @@ class List<T> implements Iterable<T> {
 - mehrere Typ-Parameter: `public interface Map<K, V> {...}`
 
 
-### Eigene Generic Klasse
+## Eigene Generic Klasse
 ```java
 class GenKlasse<T> {
     T data;
@@ -391,7 +390,7 @@ class GenKlasse<T> {
 - Erasure: Typinformationen wird zur Laufzeit entfernt (T wird durch eigentlichen Datentyp ersetzt im kompilierten Code)
 
 
-### Generics & Vererbung
+## Generics & Vererbung
 - A <- B: `class B extends A`
     - A ist Supertyp
     - B lässt sich zu A upcasten
@@ -417,23 +416,23 @@ class GenKlasse<T> {
     - raw types vermeiden & nicht mischen mit generics
 
 
-### Array von Generics
+## Array von Generics
 ```java
 List<String> listen[] = new LinkedList<String>[5]; // error
 List<String> listen[] = (LinkedList<String>[]) new List[5];
 ```
 
 
-### Bounds
-#### Beschränkung des Parametertyps
+## Bounds
+### Beschränkung des Parametertyps
 - `public class List<T extends Figur> { }`
     - Figur kann Klasse, abstrakte Klasse, Interface (trotz extends) sein
     - Erasure ersetzt T durch Figur
 - `public class X<T extends Number & Comparable & Iterator> { }`
     - Mehrfachbound
 
-### Wildcards
-#### Upper Bound
+## Wildcards
+### Upper Bound
 - Ziel: Liste spezifizieren, die mit Number oder einer zu Number typ-kompatiblen Klasse (Float, Integer, ...) parametrisiert ist (upper bound)
 - Nutzung: Nur Lesezugriff auf Elemente & als Parametercheck. Kein Schreibzugriff
 - Kovarianz: Kann Spezialisierung verwenden (muss nicht)
@@ -488,7 +487,7 @@ List<String> listen[] = (LinkedList<String>[]) new List[5];
     }
     ```
 
-#### Lower Bound
+### Lower Bound
 - Ziel: Liste spezifizieren, die mit Integer oder einem Supertyp von Integer parametrisiert ist (lower bound)
 - Supertyp kann auch Interface sein
 - Nutzung: Parameterchecks
@@ -541,10 +540,10 @@ List<String> listen[] = (LinkedList<String>[]) new List[5];
     addCat(redCatList); // NOK, because Cat is superclass of RedCat
     ```
 
-#### Unbound
+### Unbound
 - ` List<?> l`
 - readonly
 - Typ wird nie festgelegt
 
 
-### Autoboxing
+# Autoboxing
