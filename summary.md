@@ -752,79 +752,11 @@ public class BugRiddled {
 
 
 
-# Neuerungen Java 6
-- Diagnose und Management der VM mittels jconsole
-- Integration von Java DB (Java implementierte relationale Datenbank) auf Basis von Apache Derby
-
-# Neuerungen Java 7
-## Strings in switch-Anweisungen
-```java
-private static final String IDLE = "idle";
-final String terminal = "terminated";
-switch (state) {
-    case "busy": // fall through works as before
-    case terminal: // local final variables are o.k.
-    case IDLE: // constants are o.k.
-    { break; }
-    default: ...
-}
-```
-
-
-## Numerische Literale
-Neu: Numerische Literale dürfen Unterstriche enthalten
-```java
-int decimal = 42;
-int hex = 0x2A;
-int octal = 052;
-int binary = 0b101010;
-
-long creditCardNumber = 1234_5678_9012_3456L;
-long phoneNumber = +49_789_0123_45L;
-long hexWords = 0xFFEC_DE5E;
-```
-
-
-## Exception Handling - mehrere Typen erlaubt
-Neu: mehrere Exceptions gleichzeitig abfangen
-```java
-File file;
-try {
-    file = new File(”stest.txt”);
-    file.createNewFile();
-}
-catch(final IOException | SecurityException ex) {
-    System.out.println( "multiExc: " + ex );
-}
-```
-
-
-## Automatic Resource Management
-Neu: `try` Anweisungen erzeugte Ressourcen werden autom. geschlossen, wenn das interface AutoCloseable implementiert wurde
-```java
-try( BufferedReader br = new BufferedReader(new FileReader("test.txt")) ) {
-    br.readLine();
-}
-catch(final IOException ex) {
-    System.out.println( " tryWith: " + ex );
-}
-```
-
-
-## Diamond Operator
-Neu: Vereinfachte Schreibweise zu Instanziierung von Generics, Typ kann auf linker Seite weggelassen werden
-```java
-Map<String, List<Integer> > map = new HashMap<>();
-LinkedList<String> lls = new LinkedList<>();
-```
-
-
-
-
-
 # Lambdas
-- namenslose anonyme Methoden
+- namenslose anonyme Funktionen
 - kürzer als Verwendung von anonymer inneren Klasse
+- Prametrisierung von Verhalten
+- Lambda Ausdrücke werden zu funktionalen Interfaces umgewandelt
 - `<Parameterliste> -> <Ausdruck> | <Block>`
 - Parameter sind optional
 ```java
@@ -921,7 +853,7 @@ example(p -> p.getAge() >= 16, p -> p.getMobilePhoneNumber(), num -> {txtmsg(num
 
 ### Supplier
 ```java
-// Supplier: liefert Objekte vom Typ T
+// liefert Objekte vom Typ T
 @FunctionalInterface
 interface Supplier<T> {
     T get();
@@ -930,7 +862,7 @@ interface Supplier<T> {
 
 ### BinaryOperator
 ```java
-// BinaryOperator: zwei Objekte vom Typ T -> ein Objekt vom Typ T
+// zwei Objekte vom Typ T -> ein Objekt vom Typ T
 @FunctionalInterface
 interface BinaryOperator<T> {
     T apply(T t1, T t2);
@@ -999,4 +931,73 @@ gatherPersons().parallelStream()
     .map(p -> p.getHomePhoneNumber())
     .filter(num -> !num.isOnDoNotCallList())
     .forEach(num -> { robocall(num); });
+```
+
+
+
+# Neuerungen in Java von 6 - 23
+## Neuerungen Java 6
+- Diagnose und Management der VM mittels jconsole
+- Integration von Java DB (Java implementierte relationale Datenbank) auf Basis von Apache Derby
+
+## Neuerungen Java 7
+### Strings in switch-Anweisungen
+```java
+private static final String IDLE = "idle";
+final String terminal = "terminated";
+switch (state) {
+    case "busy": // fall through works as before
+    case terminal: // local final variables are o.k.
+    case IDLE: // constants are o.k.
+    { break; }
+    default: ...
+}
+```
+
+
+### Numerische Literale
+Neu: Numerische Literale dürfen Unterstriche enthalten
+```java
+int decimal = 42;
+int hex = 0x2A;
+int octal = 052;
+int binary = 0b101010;
+
+long creditCardNumber = 1234_5678_9012_3456L;
+long phoneNumber = +49_789_0123_45L;
+long hexWords = 0xFFEC_DE5E;
+```
+
+
+### Exception Handling - mehrere Typen erlaubt
+Neu: mehrere Exceptions gleichzeitig abfangen
+```java
+File file;
+try {
+    file = new File(”stest.txt”);
+    file.createNewFile();
+}
+catch(final IOException | SecurityException ex) {
+    System.out.println( "multiExc: " + ex );
+}
+```
+
+
+### Automatic Resource Management
+Neu: `try` Anweisungen erzeugte Ressourcen werden autom. geschlossen, wenn das interface AutoCloseable implementiert wurde
+```java
+try( BufferedReader br = new BufferedReader(new FileReader("test.txt")) ) {
+    br.readLine();
+}
+catch(final IOException ex) {
+    System.out.println( " tryWith: " + ex );
+}
+```
+
+
+### Diamond Operator
+Neu: Vereinfachte Schreibweise zu Instanziierung von Generics, Typ kann auf linker Seite weggelassen werden
+```java
+Map<String, List<Integer> > map = new HashMap<>();
+LinkedList<String> lls = new LinkedList<>();
 ```
