@@ -258,8 +258,8 @@ enum Seasons {
 ```java
 public enum Months {
     // Init mit Konstruktor
-    JANUARY(31), FEBRUARY(28), MARCH(31), APRIL(30), MAY(31), JUNE(30), JULY(31), AUGUST(31),
-    SEPTEMBER(30), OCTOBER(31), NOVEMBER(30), DECEMBER(31);
+    JANUARY(31), FEBRUARY(28), MARCH(31), APRIL(30), MAY(31), JUNE(30), JULY(31),
+    AUGUST(31), SEPTEMBER(30), OCTOBER(31), NOVEMBER(30), DECEMBER(31);
 
     private final int days;
 
@@ -505,8 +505,8 @@ dSupInt = new List(); // Warning, because of raw type
 - Initialisierung Interfaces:
 ```java
 dSupInt = new List<Serializable>(); // OK, da Number das Interface implementiert
-dSupInt = new List<Comparable<Number>>(); // NOK, da Integer nicht Comparable implementiert
-dSupInt = new List<Comparable<Integer>>(); // OK, da Integer Comparable implementiert
+dSupInt = new List<Comparable<Number>>(); // NOK, Integer implementiert nicht Comparable
+dSupInt = new List<Comparable<Integer>>(); // OK, Integer implementiert Comparable
 ```
 - Lesezugriff:
 ```java
@@ -552,7 +552,9 @@ addCat(redCatList); // NOK, because Cat is superclass of RedCat
 public class GenericMax {
     public static <T extends Number & Comparable<T>> T max(T... nums) { // ... = varargs
         if (nums.length == 0)
-            throw new UnsupportedOperationException("Does not support empty parameter list");
+            throw new UnsupportedOperationException(
+                "Does not support empty parameter list"
+            );
         
         T max = nums[0];
         for (T n : nums)
@@ -611,15 +613,21 @@ Vector<String> list = new Vector<String>(); // Seq. Array
 ```
 - Maps (Paare aus Schlüssel vom Typ K und Werten von Typ V (Schlüssel eindeutig)):
 ```java
-HashMap<String, String> map = new HashMap<String, String>(); // Hashtabelle, zufällige Reihenfolge
-LinkedHashMap<String, String> map = new LinkedHashMap<String, String>(); // Hashtabelle + doppelt verkettete Liste, eingefügte Reihenfolge
-TreeMap<String, String> map = new TreeMap<String, String>(); // Rot-Schwarz-Baum, sortierte Reihenfolge
+// Hashtabelle, zufällige Reihenfolge
+HashMap<String, String> map = new HashMap<String, String>();
+// Hashtabelle + doppelt verkettete Liste, eingefügte Reihenfolge
+LinkedHashMap<String, String> map = new LinkedHashMap<String, String>();
+// Rot-Schwarz-Baum, sortierte Reihenfolge
+TreeMap<String, String> map = new TreeMap<String, String>();
 ```
 - Sets (jede Referenz darf nur einmal vorkommen):
 ```java
-HashSet<String> set = new HashSet<String>(); // Hashtabelle, keine Duplikate, zufällige Reihenfolge
-LinkedHashSet<String> set = new LinkedHashSet<String>(); // Hashtabelle + doppelt verkettete Liste, eingefügte Reihenfolge
-TreeSet<String> set = new TreeSet<String>(); // Rot-Schwarz-Baum, sortierte Reihenfolge
+// Hashtabelle, keine Duplikate, zufällige Reihenfolge
+HashSet<String> set = new HashSet<String>();
+// Hashtabelle + doppelt verkettete Liste, eingefügte Reihenfolge
+LinkedHashSet<String> set = new LinkedHashSet<String>();
+// Rot-Schwarz-Baum, sortierte Reihenfolge
+TreeSet<String> set = new TreeSet<String>();
 ```
 - Queues:
 ```java
