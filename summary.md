@@ -1785,6 +1785,66 @@ in.close();
 private void writeObject(ObjectOutputStream out) throws IOException;
 private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException;
 ```
+- Methoden als `private` deklariere, da keine Implementierung eines Interfaces o. Methodenüberladung
+- Zugriff auf Default-Serilisierungsmethoden mit `defaultWriteObject()` & `defaultReadObject()`
 
+Beispiel:
+```java
+import java.io.*;
+
+public class CustomSerialization implements Serializable {
+    private transient int a;
+    private transient boolean b;
+
+    public CustomSerialization(int a, boolean b) {
+        this.a = a;
+        this.b = b;
+    }
+
+    @Serial
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        // in.defaultReadObject();
+        a = in.readInt(); // Lesereihenfolge muss mit Schreibreihenfolge übereinstimmen
+        b = in.readBoolean(); // Lesereihenfolge muss mit Schreibreihenfolge übereinstimmen
+    }
+
+    @Serial
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        // out.defaultWriteObject();
+        out.writeInt(a);
+        out.writeBoolean(b);
+    }
+}
+```
+
+Beispiel mit Vererbung:
+```java
+public class SerializableSuperClass implements Serializable {
+    private String s = null;
+    protected String getSuperString() { return s; }
+    public void setSuperString(String s) { this.s = s; }
+}
+
+// super class gets also serialized automatically
+// (when interface Serializable is inherited)
+public class SerializableSubClass extends SerializableSuperClass {
+    private String subS = null;
+
+    public void getSubString() { return subS; }
+    public void setSubString(String s) { subS = s; }
+
+    @Serial
+    private void readObject(ObjectInputStream oin) throws IOException, ClassNotFoundException {
+        setSubString((String) oin.readObject());
+    }
+
+    @Serial
+    private void writeObject(ObjectOutputStream oout) throws IOException {
+        oout.writeObject(getSubString());
+    }
+}
+```
+
+## Externalisierung
 ```java
 ```
