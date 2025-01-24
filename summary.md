@@ -1633,7 +1633,98 @@ float b = 0.2f;
 
 
 # Performance
+- -> Onenote extra Notizen
+- Optimierung durch Algorithmen & Datenstrukturen
 
 
+## Objekterzeugung
+- String sind immutable, Änderungen erzeugen neue Objekte
+- Konkatenation wenn möglich mit Stringbuffer o. neuer Klasse Stringbuilder
+```java
+String s = new String();
+for (int i = 0; i < 10000 ; i++) {
+    s += i + " "; // 3 Sekunden
+}
+
+StringBuffer sb = new StringBuffer();
+for (int i = 0; i < 10000; i++) {
+    sb.append(i);
+    sb.append(" "); // 0,06 Sekunden
+}
+String s = sb.toString();
+```
+
+- niemals mit new erzeugen, immer nur direkte Zuweisung -> spart temporäre Objekte
+```java
+    String a = "Hello, world";
+    String b = "Hello, world"; // selbes Objekt wie a
+    String c = new String("Hello, world"); // anderes Objekt
+    String s1 = "Hello, ";
+    String s2 = "world";
+    String d = s1 + s2; // auch anderes Objekt
+```
+
+
+## Object Caching
+Erzeugen der Klasse & Methodenaufruf teuer:
+```java
+public class WithOutCaching {
+    public static void main( String[] args ) {
+        for(int i = 0; i < 10; i++) {
+            ExpensiveClass ec = new ExpensiveClass();
+            ec.doSomething();
+        }
+    }
+}
+```
+besser:
+```java
+public class WithCaching {
+    private static ExpensiveClass ec;
+    static {
+        ec = new ExpensiveClass();
+    }
+
+    public static void main( String[] args ) {
+        for(int i = 0; i < 10; i++) {
+            ec.doSomething();
+        }
+    }
+}
+```
+
+
+## Memory Leaks
+Garbage Collection verhindert klassische Speicherlecks: Nicht mehr referenzierten, belegten Speicher
+-> **aber nicht unmöglich!**
+```java
+// Referenzen können bestehen bleiben
+public T pop() {
+    if (size == 0)
+        throw new IndexOutOfBoundsException("Stack underflow");
+    return elements[--size];
+}
+
+// besesere Fassung mit "Ausnullen" der Referenzen auf die Objekte
+public T pop() {
+    if (size == 0)
+        throw new IndexOutOfBoundsException("Stack underflow");
+    T returnee = elements[--size];
+    elements[size] = null;
+    return returnee;
+}
+```
+Überwachung der virtuellen Machine am besten mit JConsole, VisualVM, JDK Mission Control oder sonstigen kommerziellen Profiling Tools.
+
+
+## Zeit messen
+```java
+long startTime, endTime;
+startTime = System.currentTimeMillis();
+endTime = System.currentTimeMillis();
+endTime - startTime;
+```
+
+# Serialisierung
 ```java
 ```
