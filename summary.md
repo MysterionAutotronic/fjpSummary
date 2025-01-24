@@ -1725,6 +1725,66 @@ endTime = System.currentTimeMillis();
 endTime - startTime;
 ```
 
+
+
+
+
 # Serialisierung
+- Serialisierung: Object -> Byte-Array
+- Desealisierung: Byte-Array -> Object
+- gespeichert wird Zustand: Typ (Klassenname), Struktur, nicht statische Attribute
+    - nicht statisch, weil statische Attribute nicht Teil des Zustandes sind
+- Anwendung: Persistenz/Speichern, Kommunikation zw. z.B. JVMs
+
+## Serializable Interface
+- Für Serialisierung, muss `Serializable` Interface implementiert werden, sonst `NotSerializableException` 
+- `Serializable` ist ein Marker Interface und enthält daher keine Methoden
+- Serialisierung wird durch JVM durcheführt
+
+```java
+public class Foo implements Serializable {
+    public trasient int x; // wird nicht serialisiert durch Schlüsselwort
+}
+```
+
+
+## Default Serialisierung 
+- Zentrale Klassen: `ObjectOutputStream` & `ObjectInputStream` aus `java.io.*`
+- beide Streams müssen mit anderen Streams initialisiert werden z.B. `FileStream` o. `ByteArrayStrem`
+- Serialisierungsmethoden
+    - Output: `writeObject()`, für primitive Datentypen `writeInt()`, `writeDouble()`, ...
+    - Input: `readObject()`,  für primitive Datentypen `readInt()`, `readDouble()`, ...
+
+Objekte schreiben:
+```java
+import java.io.*;
+
+Car obj = new Car("BMW", 2000);
+ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("file.ser")); // "file.ser" is stream name
+out.writeObject(obj); // Serialisierungsmethode
+out.close();
+```
+
+Objekte lesen:
+```java
+import java.io.*;
+
+ObjectInputStream in = new ObjectInputStream(new FileInputStream("file.ser")); // "file.ser" is stream name
+obj = (Car) in.readObject(); // Serialisierungsmethode, cast notwendig
+in.close();
+```
+
+
+## Modifizierte Serialisierung
+- Hin und wieder ist Default-Serialisierung nicht ausreichend:
+    - langsam, da `writeObject()` & `readObject()` wird Reflections arbeiten
+    - hohe Redundanz
+    - wenig Kontrolle
+- Spezialmethoden müssen implementiert werden
+```java
+private void writeObject(ObjectOutputStream out) throws IOException;
+private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException;
+```
+
 ```java
 ```
