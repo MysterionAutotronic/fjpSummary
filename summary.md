@@ -1,7 +1,4 @@
 <!-- TOC -->
-- trivia
-- iterable bzw. interfaces allgemein
-- comparator allgemein
 
 # Nested Classes
 ## Statische Attributklasse (static nested class)
