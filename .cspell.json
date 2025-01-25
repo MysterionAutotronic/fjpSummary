@@ -36,6 +36,7 @@
         "pandoc",
         "pdflatex",
         "println",
+        "pstmt",
         "racecar",
         "Reflektion",
         "Serialisierungsmethode",
@@ -55,6 +56,7 @@
         "Vararg",
         "Varargs",
         "vllt",
+        "Vorkompilierte",
         "Wrapperklasse",
         "Wrapperklassen",
         "xelatex"

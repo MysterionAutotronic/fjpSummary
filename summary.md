@@ -2085,5 +2085,172 @@ IllegalArgumentException, IllegalAccessException, InvocationTargetException {
 - `getDeclaredAnnotations()`
 
 
+
+
+
+# JDBC
+- JDBC = Java Database Connectivity
+- SQL-basierte API zum Datenaustausch von Java-Programmen mit relationalen Datenbanken
+- Classes/Interfaces: 
+    - **Driver**: DB Driver
+    - **DriverManger**: registriert Treiber + baut DB Verbindung auf
+    - **Connection**: Datenbankverbindung
+    - **Statement**: SQL Anweisungen
+    - **ResultSet**: Ergebnis SQL Abfrage in Zeilen + Spalten
+
+
+## Registrierung Treiber
+- Über die Methode `registerDriver()` von `DriverManager`
+- Wird auto. im statischen Initialisierungsblock der Driver-Klasse aufgerufen
+    - Wird z.B. aktiviert von `Class.forName(drivername)`: `Class.forName("org.apache.derby.jdbc.ClientDriver");`
+- Ab Java 6 wird der Treiber auto. geladen, wenn der DB Treiber entsprechend vorbereitet ist (ohne Driver-Klasse aufrufen)
+
+
+## Verbindungsaufbau per DriverManager
+- über DriverManager mit Methode `getConnection()`
+
+```java
+static Connection getConnection(String url, String user, String password);
+
+Connection con = DriverManager.getConnection("jdbc:derby://localhost:1527/dbname; create=true");
+```
+- **url format**: `jdbc:<subprotocol>:<subname>`
+- **subprotocol**: Art der DB-Verbindung
+- **subname**: Identifikator der DB
+- **create=true**: Datenbank neu Anlegen, wenn nicht vorhanden
+
+
+## Verbindungsaufbau per DataSource
+```java
+Context ctx = new InitialContext();
+DataSource ds = (DataSource) ctx.lookup("jdbc/database");
+Connection con = ds.getConnection();
+```
+
+
+## Connection
+`java.sql.Connection` repräsentiert Verbindung zu Datenbank
+```java
+Connection con = DriverManager.getConnection("jdbc:derby://localhost:1527/dbname");
+```
+
+
+## Statements
+- SQL Anweisungen werden über Statement-Objekte ausgeführt:
+    - **Statement**: einfache, parameterlose SQL-Anweisungen
+    - **PreparedStatement**: Vorkompilierte Anweisung, gut für mehrfache Ausführung, Parametrisierung möglich
+    - **CallableStatement**: Aufruf von gespeicherten Prozeduren
+- Statements werde mithilfe Connection erzeugt über die Methoden `createStatement()`, `prepareStatement()`, `prepareCall()`
+
+
+## Ausführung SQL-Anweisungen
+- Ausführung mithilfe von Statement Objekt
+    - **executeUpdate**: INSERT, UPDATE, DELETE - Rückgabewert: Anzahl der betroffenen Zeilen
+    - **executeQuery**: SELECT - Rückgabewert: ResultSet
+    - **execute**: beliebige SQL-Anweisungen - Rückgabewert: boolean
+
+SQL-Syntax Beispiele:
+```java
+Statement stmt = con.createStatement();
+
+stmt.executeUpdate("INSERT INTO FLIGHT VALUES('LH2246',1,7,2023,7)");
+
+stmt.executeUpdate("UPDATE FLIGHT " + 
+    "SET seats_available = seats_available - 1 " +
+    "WHERE nr='LH2246' AND day=1 AND month=7 AND years=2023");
+
+stmt.executeUpdate("DELETE FROM FLIGHT " + "WHERE seats_available < 1");
+
+ResultSet rs = stmt.executeQuery("SELECT nr, seats_available" 
+    + " FROM flight WHERE nr='LH2246' "
+    + "AND day=11 AND month=6 AND year=2023");
+
+
+// con.prepareStatement(int parameterNumber, ? value)
+PreparedStatement pstmt = con.prepareStatement("SELECT * FROM FLIGHT WHERE nr=? AND month=? AND year=?");
+pstmt.setString(1, "LH2246");
+pstmt.setInt(2, 7);
+pstmt.setInt(3, 2023);
+
+ResultSet rs = pstmt.executeQuery();
+```
+
+
+## ResultSet
+Ergebnis von `executeQuery()`:
+```java
+while (rs.next()) { // nächste Ergebniszeile oder previous() rückwärts
+    System.out.println("ID: " + rs.getInt(1) + ", Value: " + rs.getString(2));
+}
+```
+Referenzierung über Spaltenname oder Index ohne 0 möglich:
+```java
+rs.getInt(1);
+rs.getString(2);
+
+rs.getInt("id");
+rs.getString("value");
+```
+Updates über ResultSet:
+```java
+rs.updateInt(2, 0);
+rs.updateRow();
+```
+
+## Ressourcenfreigabe
+- Ressourcen müssen explizit freigegeben werden
+- `close()` auf Connection, Statement, ResultSet
+```java
+con.close(); // gibt auch alle Statement und ResultSet frei, reicht aus zum Schluss
+stm.close(); // gibt auch ResultSet frei
+rs.close();
+```
+- **auto-closeable Statements**: wird auto. aufgerufen nach verlassen eines try/catch-Blocks
+
+```java
+ // Datenbankzugriff auf JavaDB mit Derby
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+public class UpdatableResultSet {
+    public static void main(String[] args) {
+
+        try (// Class.forName("org.apache.derby.jdbc.ClientDriver"); // not necessary since Java 6
+            Connection conn = DriverManager.getConnection("jdbc:derby://localhost:1527/jdbcDemoDB;create=true");
+
+            Statement stmt = conn.createStatement();) {
+
+            stmt.execute("CREATE TABLE konto (nr CHAR(10) PRIMARY KEY, stand INTEGER, inhaber VARCHAR(40))");
+
+            stmt.executeUpdate("INSERT INTO konto VALUES('0355380381', 6752, 'Behr Greta')");
+
+            ResultSet rs = stmt.executeQuery("SELECT * FROM konto");
+
+            while (rs.next()) {
+                System.out.printf("%10s    %10.2f   %s\n", rs.getString("nr"),
+                    rs.getInt("stand") / 100., rs.getString("inhaber"));
+
+                // 2,30 Kontofuehrungsgebuehr abzocken
+                rs.updateInt(2, rs.getInt(2) - 230);
+                rs.updateRow();
+            }
+
+            while (rs.previous()) {
+                System.out.printf("%10s    %10.2f   %s\n", rs.getString(1),
+                        rs.getInt(2) / 100., rs.getString(3));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+}
+```
+
+## Transaktionen
+
+
 ```java
 ```
