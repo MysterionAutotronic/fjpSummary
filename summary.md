@@ -708,7 +708,9 @@ public class BugRiddled {
     int i;
 
     @Bug(id=339838,
-    synopsis="Constructor obviously does " + "not initialize member i", state=STATE.ASSIGNED, engineer="Fourier Anna-Luise")
+    synopsis="Constructor obviously does " + "not initialize member i",
+        state=STATE.ASSIGNED,
+        engineer="Fourier Anna-Luise")
     void BugRiddled(int i) {
         this.i = i;
     }
@@ -1264,7 +1266,11 @@ void testWithEnumSource(TimeUnit timeUnit) {
 }
 
 @ParameterizedTest
-@EnumSource(value = TimeUnit.class, mode = Mode.EXCLUDE, names = { "WEEKS", "DAYS", "HOURS" })
+@EnumSource(
+    value = TimeUnit.class,
+    mode = Mode.EXCLUDE,
+    names = { "WEEKS", "DAYS", "HOURS" }
+)
 void testWithEnumSourceExclude(TimeUnit timeUnit) {
     assertFalse(EnumSet.of(TimeUnit.DAYS, TimeUnit.HOURS).contains(timeUnit));
     assertTrue(timeUnit.name().length() > 5);
@@ -2101,8 +2107,8 @@ IllegalArgumentException, IllegalAccessException, InvocationTargetException {
 ## Registrierung Treiber
 - Über die Methode `registerDriver()` von `DriverManager`
 - Wird auto. im statischen Initialisierungsblock der Driver-Klasse aufgerufen
-    - Wird z.B. aktiviert von `Class.forName(drivername)`:
-        `Class.forName("org.apache.derby.jdbc.ClientDriver");`
+- Wird z.B. aktiviert von `Class.forName(drivername)` :
+    - `Class.forName("org.apache.derby.jdbc.ClientDriver");`
 - Ab Java 6 wird der Treiber auto. geladen, wenn der DB Treiber entsprechend vorbereitet ist (ohne Driver-Klasse aufrufen)
 
 
