@@ -2218,14 +2218,23 @@ import java.sql.Statement;
 public class UpdatableResultSet {
     public static void main(String[] args) {
 
-        try (// Class.forName("org.apache.derby.jdbc.ClientDriver"); // not necessary since Java 6
-            Connection conn = DriverManager.getConnection("jdbc:derby://localhost:1527/jdbcDemoDB;create=true");
+        try (
+            // not necessary since Java 6
+            // Class.forName("org.apache.derby.jdbc.ClientDriver");
+            Connection conn = DriverManager.getConnection(
+                "jdbc:derby://localhost:1527/jdbcDemoDB;create=true"
+            );
 
             Statement stmt = conn.createStatement();) {
 
-            stmt.execute("CREATE TABLE konto (nr CHAR(10) PRIMARY KEY, stand INTEGER, inhaber VARCHAR(40))");
+            stmt.execute(
+                "CREATE TABLE konto (nr CHAR(10) PRIMARY KEY,
+                    stand INTEGER, inhaber VARCHAR(40))"
+            );
 
-            stmt.executeUpdate("INSERT INTO konto VALUES('0355380381', 6752, 'Behr Greta')");
+            stmt.executeUpdate(
+                "INSERT INTO konto VALUES('0355380381', 6752, 'Behr Greta')"
+            );
 
             ResultSet rs = stmt.executeQuery("SELECT * FROM konto");
 
@@ -2260,7 +2269,9 @@ Beispiel:
 ```java
 void bookBothDirections() {
     boolean success = false;
-    try(Connection con = DriverManager.getConnection("jdbc:derby://localhost:1527/jdbcDemoDB;");
+    try(Connection con = DriverManager.getConnection(
+        "jdbc:derby://localhost:1527/jdbcDemoDB;"
+    );
         con.setAutoCommit(false);
         Statement bookFlightStmt =  con.createStatement();) {
         bookFlightStmt.executeUpdate(..);
@@ -2300,7 +2311,9 @@ stmt.executeBatch();
 - Strukturinformationen der DB zu Laufzeit abfragen
 - Infos.: Wv. Spalten, Spaltenname, Spaltentyp, NULL etc.
 ```java
-Connection con = DriverManager.getConnection("jdbc:derby://localhost:1527/jdbcDemoDB;create=true");
+Connection con = DriverManager.getConnection(
+    "jdbc:derby://localhost:1527/jdbcDemoDB;create=true"
+);
 DatabaseMetaData dbmd = con.getMetaData();
 dbmd.getDatabaseProductName();
 dbmd.getDatabaseMajorVersion();
@@ -2347,7 +2360,7 @@ if( cond )
 
 ## Threads erzeugen
 Methode 1:
-- Thread ableiten, wenn Vererbungshirarchie nicht benötigt wird
+- Thread ableiten, wenn Vererbungshierarchie nicht benötigt wird
 ```java
 // von java.lang.Thread ableiten
 public class Thread1 extends Thread {
@@ -2397,7 +2410,9 @@ public class Unsynchronized {
         };
 
         t1.start();
-        t2.start(); // second instance would cause unsynchronized access with unpredictable results because of static var.
+        // second instance would cause unsynchronized access with unpredictable
+        // results because of static var.
+        t2.start();
     }
 }
 ```
@@ -2425,8 +2440,8 @@ class JoinTheThread {
 ```
 
 ## setDaemon()
-- VM kann stoppen, wenn deamon Thread infinite loop hat
-- Thread wird gestoppt, wenn main() zuende geht und keine anderen normalen Threads (kein deamon Thread) laufen
+- VM kann stoppen, wenn daemon Thread infinite loop hat
+- Thread wird gestoppt, wenn main() zuende geht und keine anderen normalen Threads (kein daemon Thread) laufen
 ```java
 class DaemonThread extends Thread {
     DaemonThread() {
@@ -2625,7 +2640,8 @@ class NotifySample {
     private void produce(int msgId) throws InterruptedException {
         synchronized (queue) {
             while (queue.size() >= MAX_QUEUE_SIZE) {
-                queue.wait(); // gibt Sperre frei, wartet auf notify, Sperre muss neu erworben werden
+                // gibt Sperre frei, wartet auf notify, Sperre muss neu erworben werden
+                queue.wait();
             }
             queue.add("");
             queue.notifyAll(); // alle wartenden Threads benachrichtigen
@@ -2635,7 +2651,8 @@ class NotifySample {
     private void consume() throws InterruptedException {
         synchronized (queue) {
             while (queue.isEmpty()) {
-                queue.wait(); // gibt Sperre frei, wartet auf notify, Sperre muss neu erworben werden
+                // gibt Sperre frei, wartet auf notify, Sperre muss neu erworben werden
+                queue.wait();
             }
             queue.remove(0);
             queue.notifyAll(); // alle wartenden Threads benachrichtigen
