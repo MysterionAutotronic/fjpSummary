@@ -2145,9 +2145,9 @@ Connection con = DriverManager.getConnection("jdbc:derby://localhost:1527/dbname
 
 ## Ausführung SQL-Anweisungen
 - Ausführung mithilfe von Statement Objekt
-    - **executeUpdate**: INSERT, UPDATE, DELETE - Rückgabewert: Anzahl der betroffenen Zeilen
-    - **executeQuery**: SELECT - Rückgabewert: ResultSet
-    - **execute**: beliebige SQL-Anweisungen - Rückgabewert: boolean
+    - **executeUpdate**: `INSERT`, `UPDATE`, `DELETE` - Rückgabewert: Anzahl der betroffenen Zeilen
+    - **executeQuery**: `SELECT` - Rückgabewert: `ResultSet`
+    - **execute**: beliebige SQL-Anweisungen - Rückgabewert: `boolean`
 
 SQL-Syntax Beispiele:
 ```java
@@ -2515,14 +2515,14 @@ public static void main() {
 }
 ```
 - Innerhalb von `methodTwo()` wird `methodOne()` aufgerufen
-- Da `methodOne()` ebenfalls synchronized ist und dieselbe Sperre (this) verwendet, tritt der Thread erneut in dieselbe Sperre ein, die er bereits hält
+- Da `methodOne()` ebenfalls `synchronized` ist und dieselbe Sperre (`this`) verwendet, tritt der Thread erneut in dieselbe Sperre ein, die er bereits hält
 
 
 ### Explizites Lock
 - `lock()`: Sperre setzen
 - `unlock()`: Sperre entfernen
 - support for reentrant
-- finally nicht gefordert, aber guter Stil
+- `finally` nicht gefordert, aber guter Stil
 - Unterschied **synchronized** vs. **explicit lock**
     - **synchronized**: einfach (auto. Freigabe nach Blockende), non invasiv
     - **explicit lock**: flexibel, beliebiger Scope, statisch & nicht statisch, invasiv
@@ -2592,7 +2592,7 @@ synchronized (objB) {
 
 
 ## Threads richtig stoppen + Sync Vars
-Methode 1 (synchronized):
+Methode 1 (`synchronized`):
 ```java
 static boolean stopFlag = false;
 
@@ -2609,8 +2609,8 @@ public void run() {
 }
 ```
 
-Methode 2 (volatile):
-- volatile: kein Cache, immer direkt auf Speicher schreiben & lesen
+Methode 2 (`volatile`):
+- `volatile`: kein Cache, immer direkt auf Speicher schreiben & lesen
 ```java
 public void stopThread() {
     stopFlag = true;
@@ -2629,7 +2629,7 @@ public void run() {
 - `Object.notify()`, `Object.notifyAll()`: Signal an wartendes Objekt senden
 - `wait()` & `notify()` können nur aufgerufen werden, wenn Aufrufer Sperre hält
 
-Beispiel (synchronized):
+Beispiel (`synchronized`):
 - Wichtig für Producer-Consumer-Problem (Synchronisationsproblem)
 - Race Condition: mehrere Threads greifen auf gemeinsame Ressource zu (Queue)
 - Deadlock: zwei Threads warten aufeinander dadurch geht nichts mehr
