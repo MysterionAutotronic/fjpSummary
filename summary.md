@@ -1312,7 +1312,7 @@ abstract class // kann nicht instanziiert werden (z.B. nur als Oberklasse)
 abstract method // placeholder
 
 final int var // immutable, Konstante ohne Klasse
-var = 5; // nur eine Zuweisung erlaubt
+var = 5 // nur eine Zuweisung erlaubt
 final method() // verhindert Override
 final class // erlaubt keine Ableitung
 void method(final int nr) // keine Parameteränderung
@@ -1321,6 +1321,8 @@ static var // existiert nur einmal im Speicher (unabhängig von Instanzen)
 static method() // können nur auf static zugreifen, unabhängig von Instanzen
 static class // nur nested classes -> unabhängig von äußerer Instanz
 static {} // Wird nur beim ersten Laden der Klasse aufgeführt
+
+transient var // bei autom. Serialisierung wird die Var. übersprungen
 
 volatile var // wird von mehreren Threads geteilt (nicht atomar)
 
@@ -1787,6 +1789,7 @@ private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundE
 ```
 - Methoden als `private` deklariere, da keine Implementierung eines Interfaces o. Methodenüberladung
 - Zugriff auf Default-Serialisierungsmethoden mit `defaultWriteObject()` & `defaultReadObject()`
+- Durch eigene Methoden Implementierung können auch **transient** Attribute serialisiert werden
 
 Beispiel:
 ```java
@@ -1845,7 +1848,60 @@ public class SerializableSubClass extends SerializableSuperClass {
     }
 }
 ```
+- Problem: Serialisierung der Superklasse kann nicht kontrolliert werden -> **Externalisierung**
+
 
 ## Externalisierung
+- Volle Kontrolle über serialisierte Form - Serialisierung der Superklasse steuern
+- Superklasse wird nicht autom. serialisiert
+- kann kombiniert mit Serializable Interface verwendet werden
+
+Methoden zu implementieren:
+```java
+import java.io.Externalizable;
+
+public void writeExternal(ObjectOutput out) throws IOException; // muss Superklasse serialisieren
+public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException; // muss Superklasse initialisieren!
+```
+
+Beispiel:
+```java
+import java.io.Externalizable;
+
+public class ExternalizableSubClass extends SerializableSuperClass implements Externalizable {
+    private String subString = null;
+
+    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+        setSuperString((String) in.readObject());
+        setSubString((String) in.readObject());
+    }
+
+    public void writeExternal(ObjectOutput out) throws IOException {
+        out.writeObject(getSuperString());
+        out.writeObject(getSubString());
+    }
+}
+```
+
+
+## Caveats
+Bei Singletons `readResolve()` Methode implementieren:
+```java
+public class Highlander implements Serializable {
+    private static final Highlander INSTANCE = new Highlander();
+    private Highlander() {}
+    public static Highlander getInstance() { return INSTANCE; }
+
+    private Object readResolve() {
+        return INSTANCE;
+    }
+}
+```
+
+
+
+
+# Reflections
+
 ```java
 ```
