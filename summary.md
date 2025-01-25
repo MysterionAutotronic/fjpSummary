@@ -1591,7 +1591,8 @@ public void f() throws AnwendungsException {
     try {
         g();
     } catch (IOException e) {
-        ex.printStackTrace(); // zeigt, dass AnwendungsException von einer ArrayIndexOutOfBoundsException ausgelöst wurde
+        ex.printStackTrace(); // zeigt, dass AnwendungsException von 
+        // einer ArrayIndexOutOfBoundsException ausgelöst wurde
         throw new AnwendungsException("Fehler in g()", e);
     }
 }
@@ -1762,7 +1763,9 @@ Objekte schreiben:
 import java.io.*;
 
 Car obj = new Car("BMW", 2000);
-ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("file.ser")); // "file.ser" is stream name
+ObjectOutputStream out = new ObjectOutputStream(
+    new FileOutputStream("file.ser") // "file.ser" is stream name
+);
 out.writeObject(obj); // Serialisierungsmethode
 out.close();
 ```
@@ -1771,7 +1774,9 @@ Objekte lesen:
 ```java
 import java.io.*;
 
-ObjectInputStream in = new ObjectInputStream(new FileInputStream("file.ser")); // "file.ser" is stream name
+ObjectInputStream in = new ObjectInputStream(
+    new FileInputStream("file.ser") // "file.ser" is stream name
+);
 obj = (Car) in.readObject(); // Serialisierungsmethode, cast notwendig
 in.close();
 ```
@@ -1805,10 +1810,11 @@ public class CustomSerialization implements Serializable {
     }
 
     @Serial
-    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+    private void readObject(ObjectInputStream in) throws IOException, 
+    ClassNotFoundException {
         // in.defaultReadObject();
-        a = in.readInt(); // Lesereihenfolge muss mit Schreibreihenfolge übereinstimmen
-        b = in.readBoolean(); // Lesereihenfolge muss mit Schreibreihenfolge übereinstimmen
+        a = in.readInt(); // Lesereihenfolge = Schreibreihenfolge
+        b = in.readBoolean(); // Lesereihenfolge = Schreibreihenfolge
     }
 
     @Serial
@@ -1838,7 +1844,8 @@ public class SerializableSubClass extends SerializableSuperClass {
     public void setSubString(String s) { subS = s; }
 
     @Serial
-    private void readObject(ObjectInputStream oin) throws IOException, ClassNotFoundException {
+    private void readObject(ObjectInputStream oin) throws IOException, 
+    ClassNotFoundException {
         setSubString((String) oin.readObject());
     }
 
@@ -1860,8 +1867,10 @@ Methoden zu implementieren:
 ```java
 import java.io.Externalizable;
 
-public void writeExternal(ObjectOutput out) throws IOException; // muss Superklasse serialisieren
-public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException; // muss Superklasse initialisieren!
+// muss Superklasse serialisieren
+public void writeExternal(ObjectOutput out) throws IOException;
+// muss Superklasse initialisieren!
+public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException; 
 ```
 
 Beispiel:
@@ -1902,6 +1911,100 @@ public class Highlander implements Serializable {
 
 
 # Reflections
+- Laufzeitinformationen über Klassen, Methoden, Felder, Konstruktoren
+- Verwendung für Lesen o. Erzeugen/Schreiben & wenn Informationen zur Klasse nicht zur Compilezeit bekannt sind
+
+
+## Bestandteile von Klassen
+- `java.lang.Class`-Objekt repräsentiert die **Metadaten** einer Klasse und dient als Einstiegspunkt für die Reflection
+- Bestandteile: Name, Superklasse, Konstruktoren, Attribute, Methoden, Interfaces 
+
+
+## Klassen reflektieren
+Verschiedene Methoden um Klasse zu reflektieren:
+```java
+// Reflektion auf Instanz
+Object o = new String("Hello");
+Class<?> cls = o.getClass(); 
+
+// Reflektion auf Klasse
+Class<?> cls = String.class;
+
+// über Name der Klasse als String
+String className = "java.lang.String";
+Class<?> cls = Class.forName(className);
+
+// generische Variante
+String className = "java.util.ArrayList";
+Class<ArrayList> cls = (Class<ArrayList>) Class.forName(className);
+ArrayList list = cls.newInstance(); // Kein Cast notwendig
+```
+
+
+## getX() vs. getDeclaredX() Prefix für Methoden
+- **get**: nur **public**, beinhaltet von Superklassen geerbte Elemente
+- **getDeclared**: alle (auch **private**), nur Elemente der Klasse selbst (keine Superklasse)
+
+
+## Reflections Methoden
+### Attribute
+Get attribute:
+```java
+Field f = cls.getField("name");
+Field[] fields = cls.getFields();
+// alternatives: getDeclaredField(), getDeclaredFields()
+```
+
+Get attribute information:
+```java
+String name = f.getName(); // name of attribute
+Class<?> type = f.getType(); // type of attr., primitive types
+// will return int.class or Integer.TYPE ...
+
+// Modifikatoren
+int mod = f.getModifiers(); // int - Zahl repräsentiert Modifier-Kombination
+Modifier.toString(mod); // gibt "public static final" zurück
+
+boolean isPublic = Modifier.isPublic(mod);
+boolean isStatic = Modifier.isStatic(mod);
+// ... is{Abstract, Final, Interface, Native, Private, Protected, Public, Static, 
+// Strict, Synchronized, Transient, Volatile}
+```
+
+Get & set attribute value:
+```java
+// Objekte
+Object value = f.get(o); // get value of attribute of object o 
+f.set(o, val); // set value of attr. of object o
+
+// primitive Datentypen
+int value = f.getInt(x);
+f.setInt(x, 2);
+
+```
+
+Beispiel:
+```java
+static void inspiziereAttribute(Object obj) throws IllegalArgumentException, 
+IllegalAccessException {
+    Class cls = obj.getClass();
+    Field fields[] = cls.getDeclaredFields();
+
+    for (Field f : fields) {
+        f.setAccessible(true); // private Attr. zugreifbar machen
+        Object val = f.get(obj);
+
+        if (Modifier.isStatic(f.getModifiers()))
+            continue;
+        if (f.getType().isPrimitive() 
+            || f.getType().getName().equals("java.lang.String")) // primivive o. String
+            ...
+        else
+            inspiziereAttribute(val); // Rekursion für nicht primitive Typen
+    }
+}
+```
+
 
 ```java
 ```
