@@ -1324,7 +1324,7 @@ static {} // Wird nur beim ersten Laden der Klasse aufgeführt
 
 transient var // bei autom. Serialisierung wird die Var. übersprungen
 
-volatile var // wird von mehreren Threads geteilt (nicht atomar)
+volatile var // kein Cache, immer direkt auf Speicher schreiben & lesen (Threads)
 
 synchronized method() // nur ein Thread kann gleichzeitig zugreifen
 ```
@@ -2337,6 +2337,383 @@ if( cond )
 
 
 
-# Threading & Concurrency 
+# Threading & Concurrency
+- Was ist ein Thread?:
+    - unabhängiger Ausführungsstrang innerhalb eines Prozesses
+    - teilt Systemressourcen mit anderen Threads
+    - eigener Befehlszähler, eigener Stack
+    - kann Zustände new, runnable, blocked, waiting 
+- Anwendung: Nebenläufigkeit/Parallelität, mehrere CPUs nutzen, Hintergrundaufgaben, Non-blocking I/O
+
+## Threads erzeugen
+Methode 1:
+- Thread ableiten, wenn Vererbungshirarchie nicht benötigt wird
 ```java
+// von java.lang.Thread ableiten
+public class Thread1 extends Thread {
+    public void run() { // overwrite run()
+    }
+    public void main () {
+        final Thread1 tt = new Thread1();
+        tt.start();
+    }
+}
+```
+
+Methode 2:
+- Runnable, wenn von anderer Klasse abgeleitet werden muss
+- Thread ist einfacher, Runnable flexibler
+```java
+// java.lang.Runnable implementieren
+public class Runnable1 implements Runnable {
+    public void run() { // implement run()
+    }
+    public void main() {
+        final Runnable1 tr = new Runnable1();
+        final Thread th = new Thread(tr);
+        th.start();
+
+        // Aufruf von nicht statischen Methoden
+        Thread.getCurrentThread().staticMethod();
+    }
+}
+```
+
+Methode 3:
+```java
+// anonyme Klasse
+public class Unsynchronized {
+    public void methodOne() {
+        Worker.doSomething(); // calculation with static var
+    }
+
+    public static void main(String[] args) {
+        final Unsynchronized unSync = new Unsynchronized();
+
+        final Thread t1 = new Thread() {
+            public void run() {
+                unSync.methodOne();
+            }
+        };
+
+        t1.start();
+        t2.start(); // second instance would cause unsynchronized access with unpredictable results because of static var.
+    }
+}
+```
+
+## join()
+- `join()`: auf die Beendigung eines anderen Threads warten
+```java
+class JoinTheThread {
+    static class JoinerThread extends Thread {
+        public int result;
+
+        @Override
+        public void run() {
+            result = 1;
+        }
+
+        public static void main(String[] args) throws InterruptedException {
+            JoinerThread t = new JoinerThread();
+            t.start();
+            t.join();
+            System.out.println(t.result);
+        }
+    }
+}
+```
+
+## setDaemon()
+- VM kann stoppen, wenn deamon Thread infinite loop hat
+- Thread wird gestoppt, wenn main() zuende geht und keine anderen normalen Threads (kein deamon Thread) laufen
+```java
+class DaemonThread extends Thread {
+    DaemonThread() {
+        setDaemon(true);
+    }
+
+    @Override
+    public void run() {
+        int i = 0;
+        while (true)
+            ...
+    }
+    
+    public static void main(String[] args) {
+        new DaemonThread().start();
+    }
+}
+```
+
+
+## Synchronisation
+- **Kritischer Abschnitt**: Programmteil, in dem sich nur ein Thread zu einem Zeitpunkt befinden darf
+- **Sperre (Lock)**: sperren beim betreten des kritischen Abschnitts, entsperren beim verlassen
+- **Reentrant**: Kann mehrfach gesperrt werden vom gleichen Thread, muss auch mehrfach entsperrt werden
+
+### synchronized
+- `synchronized`: Schlüsselwort für Methoden oder Blöcke
+    - bei static Methoden: sperrt statisches class Object
+    - bei normalen Methoden: sperrt Objekt/Instanz bzw. this
+    - bei Blocksperre: 
+        - nur den Block selber
+        - Objekte innerhalb des Blocks werden nicht gesperrt, außer explizit übergeben
+
+Beispiel:
+```java
+class Foo {
+    Object obj = new Object();
+
+    // sperrt Foo.class
+    static synchronized void baz() {...}
+
+    // sperrt this
+    synchronized void bar() {...}
+
+    void bingo() {
+        // sperrt this.obj
+        synchronized(obj) {...}
+
+        // sperrt this
+        synchronized(this) {...}
+    }
+}
+```
+
+reentrant Beispiel:
+```java
+public synchronized void methodOne() { ... }
+public synchronized void methodTwo() {
+    methodOne();
+}
+
+public static void main() {
+    final Foo foo = new Foo();
+    final Thread t1 = new Thread() {
+        @Override
+        public void run() {
+            Foo.methodTwo();
+        }
+    };
+    t1.start();
+}
+```
+- Innerhalb von `methodTwo()` wird `methodOne()` aufgerufen
+- Da `methodOne()` ebenfalls synchronized ist und dieselbe Sperre (this) verwendet, tritt der Thread erneut in dieselbe Sperre ein, die er bereits hält
+
+
+### Explizites Lock
+- `lock()`: Sperre setzen
+- `unlock()`: Sperre entfernen
+- support for reentrant
+- finally nicht gefordert, aber guter Stil
+- Unterschied **synchronized** vs. **explicit lock**
+    - **synchronized**: einfach (auto. Freigabe nach Blockende), non invasiv
+    - **explicit lock**: flexibel, beliebiger Scope, statisch & nicht statisch, invasiv
+
+Beispiel `lock()`:
+```java
+import java.util.concurrent.Lock;    
+
+final Lock l = new Lock1();
+try {
+    f.lock();
+}
+finally {
+    f.unlock();
+}
+
+
+```
+
+Beispiel `tryLock()`:
+```java
+if (f.tryLock()) { // locks
+    try { ... }
+    finally {
+        f.unlock();
+    }
+}
+```
+
+Beispiel ReentrantLock:
+```java
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
+final ReentrantLock lock = new ReentrantLock();
+private void methodOne() {
+    try {
+        lock.lock();
+        try {
+            lock.lock();
+        }
+        finally {
+            lock.unlock();
+        }
+    }
+    finally {
+        lock.unlock();
+    }
+}
+```
+
+
+## Deadlocks
+```java
+// thread 1
+synchronized (objA) {
+    synchronized (objB) {}
+}
+
+// thread 2
+synchronized (objB) {
+    synchronized (objA) {}
+}
+```
+- deadlock detection schwierig
+- Locks durchnummerieren, in aufsteigender Reihenfolge sperren
+
+
+## Threads richtig stoppen + Sync Vars
+Methode 1 (synchronized):
+```java
+static boolean stopFlag = false;
+
+public synchronized void stopThread() {
+    stopFlag = true;
+}
+
+private synchronized boolean isStopped() {
+    return stopFlag;
+}
+
+public void run() {
+    while (!isStopped()) {}
+}
+```
+
+Methode 2 (volatile):
+- volatile: kein Cache, immer direkt auf Speicher schreiben & lesen
+```java
+public void stopThread() {
+    stopFlag = true;
+}
+
+public void run() {
+    while (!stopFlag) {}
+}
+```
+
+
+## Signalisierung 
+- `Object.wait()`: 
+    - auf Bedingung warten
+    - Sperre freigegeben & Objekt in Warteschlange eingereiht
+- `Object.notify()`, `Object.notifyAll()`: Signal an wartendes Objekt senden
+- `wait()` & `notify()` können nur aufgerufen werden, wenn Aufrufer Sperre hält
+
+Beispiel (synchronized):
+- Wichtig für Producer-Consumer-Problem (Synchronisationsproblem)
+- Race Condition: mehrere Threads greifen auf gemeinsame Ressource zu (Queue)
+- Deadlock: zwei Threads warten aufeinander dadurch geht nichts mehr
+```java
+class NotifySample {
+    private final List<String> queue = new LinkedList<String>();
+
+    private void produce(int msgId) throws InterruptedException {
+        synchronized (queue) {
+            while (queue.size() >= MAX_QUEUE_SIZE) {
+                queue.wait(); // gibt Sperre frei, wartet auf notify, Sperre muss neu erworben werden
+            }
+            queue.add("");
+            queue.notifyAll(); // alle wartenden Threads benachrichtigen
+        }
+    }
+
+    private void consume() throws InterruptedException {
+        synchronized (queue) {
+            while (queue.isEmpty()) {
+                queue.wait(); // gibt Sperre frei, wartet auf notify, Sperre muss neu erworben werden
+            }
+            queue.remove(0);
+            queue.notifyAll(); // alle wartenden Threads benachrichtigen
+        }
+    }
+
+    public static void main(String[] args) {
+        final NotifySample notifySample = new NotifySample();
+        
+        final Thread producer1 = new Thread("Producer-1") {
+            @Override
+            public void run() {
+                try {
+                    for (int i = 0; i < MESSAGE_COUNT; i++) {
+                        notifySample.produce(i);
+                    }
+                }
+                catch (InterruptedException x) {
+                    x.printStackTrace();
+                }
+            }
+        };
+
+        final Thread consumer1 = new Thread("Consumer-1") {
+            @Override
+            public void run() {
+                try {
+                    while (true) {
+                        notifySample.consume();
+                    }
+                }
+                catch (InterruptedException x) {
+                    x.printStackTrace();
+                }
+            }
+        };
+
+        producer1.start();
+        consumer1.start(); // continues running!!!
+        consumer2.start(); // continues running!!!
+    };
+} 
+```
+
+Beispiel (explicit Lock):
+```java
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
+private final Lock lock = new ReentrantLock();
+private final Condition notFull = lock.newCondition();
+
+private void produce(int msgId) throws InterruptedException {
+    lock.lock();
+    try {
+        while (queue.size() >= MAX_QUEUE_SIZE) {
+            notFull.await();
+        }
+        queue.add("");
+        notFull.signalAll();
+    }
+    finally {
+        lock.unlock();
+    }
+}
+
+private void consume() throws InterruptedException {
+    lock.lock();
+    try {
+        while (queue.isEmpty()) {
+            notFull.await();
+        }
+        queue.remove(0);
+        notFull.signalAll();
+    }
+    finally {
+        lock.unlock();
+    }
+}
 ```
