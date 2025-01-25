@@ -2208,7 +2208,7 @@ rs.close();
 - **auto-closeable Statements**: wird auto. aufgerufen nach verlassen eines try/catch-Blocks
 
 ```java
- // Datenbankzugriff auf JavaDB mit Derby
+// Datenbankzugriff auf JavaDB mit Derby
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -2249,8 +2249,94 @@ public class UpdatableResultSet {
 }
 ```
 
+
 ## Transaktionen
+- **Auto-Commit-Modus**: für jedes SQL-Anweisung ein Commit
+- Transaktionen: Zusammenfassen mehrerer SQL-Anweisungen zu einem Commit
+- Connection Auto-Commit-Modus ausschalten mit `setAutoCommit(false)`
+- bei Erfolg auf Connection-Objekt `commit()` aufrufen, sonst `rollback()`
+
+Beispiel:
+```java
+void bookBothDirections() {
+    boolean success = false;
+    try(Connection con = DriverManager.getConnection("jdbc:derby://localhost:1527/jdbcDemoDB;");
+        con.setAutoCommit(false);
+        Statement bookFlightStmt =  con.createStatement();) {
+        bookFlightStmt.executeUpdate(..);
+
+        success = true;
+    } catch (SQLException e) {
+        e.printStackTrace();
+    } finally {
+        try {
+            if (success) {
+                con.commit();
+            } else {
+                con.rollback();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+}
+```
 
 
+## Batch-Processing
+```java
+stmt.executeUpdate(stm1);
+stmt.executeUpdate(stm2);
+
+// Batch-Processing
+stmt.addBatch(stm1);
+stmt.addBatch(stm2);
+stmt.executeBatch();
+```
+- funktioniert auch mit PreparedStatements
+
+
+## Metainformationen
+- Strukturinformationen der DB zu Laufzeit abfragen
+- Infos.: Wv. Spalten, Spaltenname, Spaltentyp, NULL etc.
+```java
+Connection con = DriverManager.getConnection("jdbc:derby://localhost:1527/jdbcDemoDB;create=true");
+DatabaseMetaData dbmd = con.getMetaData();
+dbmd.getDatabaseProductName();
+dbmd.getDatabaseMajorVersion();
+dbmd.getDatabaseMinorVersion();
+dbmd.getDriverName();
+dbmd.getDriverVersion();
+dbmd.getUserName();
+dbmd.getURL();
+dbmd.getSQLKeywords();
+
+Statement stmt = con.createStatement();
+ResultSet rs = stmt.executeQuery("select * from sys.systables");
+ResultSetMetaData rsmd = rs.getMetaData();
+for (int i = 1; i <= rsmd.getColumnCount(); i++) {
+    rsmd.getColumnLabel(i);
+    rsmd.getColumnTypeName(i);
+    rsmd.getColumnDisplaySize(i);
+    rsmd.getColumnClassName(i);
+}
+```
+
+
+## Savepoint
+voller Rollback nicht notwendig:
+```java
+stmt1.executeUpdate();
+Savepoint save1 = con.setSavepoint();
+stmt2.executeUpdate();
+if( cond )
+    con.rollback(save1);
+```
+
+
+
+
+
+# Threading & Concurrency 
 ```java
 ```
