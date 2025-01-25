@@ -1733,7 +1733,7 @@ endTime - startTime;
 - Serialisierung: Object -> Byte-Array
 - Deserealisierung: Byte-Array -> Object
 - gespeichert wird Zustand: Typ (Klassenname), Struktur, nicht statische Attribute
-    - nicht statisch, weil statische Attribute nicht Teil des Zustandes sind
+    - statische Attribute nicht Teil des Zustandes
 - Anwendung: Persistenz/Speichern, Kommunikation zw. z.B. JVMs
 
 ## Serializable Interface
@@ -1777,7 +1777,7 @@ in.close();
 
 ## Modifizierte Serialisierung
 - Hin und wieder ist Default-Serialisierung nicht ausreichend:
-    - langsam, da `writeObject()` & `readObject()` wird Reflections arbeiten
+    - langsam, da `writeObject()` & `readObject()` mit Reflections arbeiten
     - hohe Redundanz
     - wenig Kontrolle
 - Spezialmethoden müssen implementiert werden
@@ -1823,10 +1823,11 @@ public class SerializableSuperClass implements Serializable {
     private String s = null;
     protected String getSuperString() { return s; }
     public void setSuperString(String s) { this.s = s; }
+    // readObject() & writeObject() are optional
 }
 
 // super class gets also serialized automatically
-// (when interface Serializable is inherited)
+// when interface Serializable is inherited
 public class SerializableSubClass extends SerializableSuperClass {
     private String subS = null;
 
