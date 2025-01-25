@@ -2738,3 +2738,9 @@ private void consume() throws InterruptedException {
     }
 }
 ```
+
+# Aggregation vs. Komposition vs. Vererbung
+
+**Aggregation**: Schwache *hat-eine* Beziehung (Auto hat Motor, Motor existiert ohne Auto)
+**Komposition**: Starke *hat-eine* Beziehung (Haus hat Räume, Räume existieren nicht ohne Haus)
+**Vererbung**: *ist-eine* Beziehung (Hund ist Tier)
