@@ -1997,13 +1997,92 @@ IllegalAccessException {
         if (Modifier.isStatic(f.getModifiers()))
             continue;
         if (f.getType().isPrimitive() 
-            || f.getType().getName().equals("java.lang.String")) // primivive o. String
+            || f.getType().getName().equals("java.lang.String")) // primitive o. String
             ...
         else
             inspiziereAttribute(val); // Rekursion für nicht primitive Typen
     }
 }
 ```
+
+## Konstruktoren
+```java
+class MyClass {
+    private String message;
+
+    public MyClass(String message) {
+        this.message = message;
+    }
+}
+
+Class<?> cls = MyClass.class;
+// Constructor getConstructor(Class... parameterTypes);
+Constructor<?> constructor = cls.getConstructor(String.class);
+Constructor<?>[] constructors = cls.getConstructors();
+
+// create instance
+MyClass obj = (MyClass) constructor.newInstance("Hello, World!");
+Object obj = constructor.newInstance("Hello, Reflection!");
+
+// for private constructors
+Constructor<?> constructor = cls.getDeclaredConstructor(String.class);
+constructor.setAccessible(true);
+Object obj = constructor.newInstance("Hello, Reflection!");
+```
+
+
+## Methoden
+```java
+// getMethod(String name, Class... parameterTypes)
+Method m = cls.getMethod("length", String.class);
+Method[] methods = cls.getMethods();
+
+String name = m.getName(); // name of method
+Class<?> returnType = m.getReturnType(); // return type of method
+Class<?>[] paramTypes = m.getParameterTypes(); // parameter types of method
+
+// invoke method
+// invoke(Object, Object... args)
+Object result = m.invoke(obj, "Hello, Reflection!");
+Object result = m.invoke(null, "Hello, Reflection!"); // static method
+
+// invoke private method
+Method m = cls.getDeclaredMethod("length", String.class);
+m.setAccessible(true); // private Method
+Object result = m.invoke(obj, "Hello, Reflection!");
+
+// throws NoSuchMethodException, IllegalAccessException InvocationTargetException
+```
+Beispiel:
+```java
+static void inspiziereMethoden(Object obj) {
+    Class cls = obj.getClass();
+    Method methods[] = cls.getDeclaredMethods();
+
+    for (Method m : methods) {
+        Class parmTypes[] = m.getParameterTypes();
+        for (Class c : parmTypes)
+    }
+}
+
+
+public static void main(String[] args) throws SecurityException, NoSuchMethodException,
+IllegalArgumentException, IllegalAccessException, InvocationTargetException {
+    Class cls = Complex.class;
+    Method valueOf = cls.getMethod("valueOf", double.class, double.class); 
+
+    Complex c = (Complex) valueOf.invoke(null, new Double(-1.), new Double(1.));
+    Complex d = (Complex) valueOf.invoke(null, new Double(1.), new Double(-1.));
+    
+    Method add = cls.getMethod("add", Complex.class, Complex.class);
+    Complex sum = (Complex) add.invoke(c, d);
+}
+```
+
+## Annotations
+- Von jedem Element können Annotations mithilfe von Reflection gelesen werden
+- `getAnnotations()` - Annotations von Superklassen dabei
+- `getDeclaredAnnotations()`
 
 
 ```java
