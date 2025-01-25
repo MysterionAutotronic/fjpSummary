@@ -1532,7 +1532,7 @@ class Test implements Comparable<Test> {
 
 
 ## Comparable vs. Comparator
-- Comparable is used for natural ordering/comparision within the class
+- Comparable is used for natural ordering/comparison within the class
 - Comparator defines external logic
 
 ```java
@@ -1563,7 +1563,7 @@ catch (BindException e) {...}
 catch (ConnectException e) {...}
 ...
 ```
-- Nicht zuviele Exception Typen definieren -> Alternativ: Error Codes
+- Nicht zu viele Exception Typen definieren -> Alternativ: Error Codes
 - möglichst genau Fehlerbeschreibung
 
 
@@ -1575,7 +1575,7 @@ catch (ConnectException e) {...}
 ### Custom Exception
 ```java
 public class AnwendungsException extends Exception {
-     // muss einen Konstruktur besitzen
+     // muss einen Konstruktor besitzen
     public AnwendungsException(String msg, Throwable t) {
         super(msg, t);
     }
@@ -1589,14 +1589,14 @@ public void f() throws AnwendungsException {
     try {
         g();
     } catch (IOException e) {
-        ex.printStackTrace(); // zeigt, dass AnwendungsException von einer ArrayIndexOutOfBoundsAcception ausgelöst wurde
+        ex.printStackTrace(); // zeigt, dass AnwendungsException von einer ArrayIndexOutOfBoundsException ausgelöst wurde
         throw new AnwendungsException("Fehler in g()", e);
     }
 }
 ```
 
-### finaly
-- finaly-Block wird immer ausgeführt
+### finally
+- finally-Block wird immer ausgeführt
 - Aufräumarbeiten
 Verhalten:
 ```java
@@ -1619,7 +1619,7 @@ float a = 0.1f;
 float b = 0.2f;
 (a * b); // 0.020000001
 ```
-- Lösung - ganze Zahlen verwenden & Komma seperat speichern:
+- Lösung - ganze Zahlen verwenden & Komma separat speichern:
 - Alternativlösung - BigDecimal:
 ```java
     BigDecimal x = new BigDecimal("0.1");
@@ -1633,7 +1633,7 @@ float b = 0.2f;
 
 
 # Performance
-- -> Onenote extra Notizen
+- -> OneNote extra Notizen
 - Optimierung durch Algorithmen & Datenstrukturen
 
 
@@ -1705,7 +1705,7 @@ public T pop() {
     return elements[--size];
 }
 
-// besesere Fassung mit "Ausnullen" der Referenzen auf die Objekte
+// bessere Fassung mit "Ausnullen" der Referenzen auf die Objekte
 public T pop() {
     if (size == 0)
         throw new IndexOutOfBoundsException("Stack underflow");
@@ -1731,7 +1731,7 @@ endTime - startTime;
 
 # Serialisierung
 - Serialisierung: Object -> Byte-Array
-- Desealisierung: Byte-Array -> Object
+- Deserealisierung: Byte-Array -> Object
 - gespeichert wird Zustand: Typ (Klassenname), Struktur, nicht statische Attribute
     - nicht statisch, weil statische Attribute nicht Teil des Zustandes sind
 - Anwendung: Persistenz/Speichern, Kommunikation zw. z.B. JVMs
@@ -1739,18 +1739,18 @@ endTime - startTime;
 ## Serializable Interface
 - Für Serialisierung, muss `Serializable` Interface implementiert werden, sonst `NotSerializableException` 
 - `Serializable` ist ein Marker Interface und enthält daher keine Methoden
-- Serialisierung wird durch JVM durcheführt
+- Serialisierung wird durch JVM durchgeführt
 
 ```java
 public class Foo implements Serializable {
-    public trasient int x; // wird nicht serialisiert durch Schlüsselwort
+    public transient int x; // wird nicht serialisiert durch Schlüsselwort
 }
 ```
 
 
 ## Default Serialisierung 
 - Zentrale Klassen: `ObjectOutputStream` & `ObjectInputStream` aus `java.io.*`
-- beide Streams müssen mit anderen Streams initialisiert werden z.B. `FileStream` o. `ByteArrayStrem`
+- beide Streams müssen mit anderen Streams initialisiert werden z.B. `FileStream` o. `ByteArrayStream`
 - Serialisierungsmethoden
     - Output: `writeObject()`, für primitive Datentypen `writeInt()`, `writeDouble()`, ...
     - Input: `readObject()`,  für primitive Datentypen `readInt()`, `readDouble()`, ...
@@ -1786,7 +1786,7 @@ private void writeObject(ObjectOutputStream out) throws IOException;
 private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException;
 ```
 - Methoden als `private` deklariere, da keine Implementierung eines Interfaces o. Methodenüberladung
-- Zugriff auf Default-Serilisierungsmethoden mit `defaultWriteObject()` & `defaultReadObject()`
+- Zugriff auf Default-Serialisierungsmethoden mit `defaultWriteObject()` & `defaultReadObject()`
 
 Beispiel:
 ```java
