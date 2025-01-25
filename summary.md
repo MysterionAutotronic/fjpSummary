@@ -1877,7 +1877,9 @@ Beispiel:
 ```java
 import java.io.Externalizable;
 
-public class ExternalizableSubClass extends SerializableSuperClass implements Externalizable {
+public class ExternalizableSubClass
+        extends SerializableSuperClass 
+        implements Externalizable {
     private String subString = null;
 
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
@@ -2102,7 +2104,8 @@ IllegalArgumentException, IllegalAccessException, InvocationTargetException {
 ## Registrierung Treiber
 - Über die Methode `registerDriver()` von `DriverManager`
 - Wird auto. im statischen Initialisierungsblock der Driver-Klasse aufgerufen
-    - Wird z.B. aktiviert von `Class.forName(drivername)`: `Class.forName("org.apache.derby.jdbc.ClientDriver");`
+    - Wird z.B. aktiviert von `Class.forName(drivername)`:
+        `Class.forName("org.apache.derby.jdbc.ClientDriver");`
 - Ab Java 6 wird der Treiber auto. geladen, wenn der DB Treiber entsprechend vorbereitet ist (ohne Driver-Klasse aufrufen)
 
 
@@ -2112,7 +2115,9 @@ IllegalArgumentException, IllegalAccessException, InvocationTargetException {
 ```java
 static Connection getConnection(String url, String user, String password);
 
-Connection con = DriverManager.getConnection("jdbc:derby://localhost:1527/dbname; create=true");
+Connection con = DriverManager.getConnection(
+    "jdbc:derby://localhost:1527/dbname; create=true"
+);
 ```
 - **url format**: `jdbc:<subprotocol>:<subname>`
 - **subprotocol**: Art der DB-Verbindung
@@ -2167,7 +2172,9 @@ ResultSet rs = stmt.executeQuery("SELECT nr, seats_available"
 
 
 // con.prepareStatement(int parameterNumber, ? value)
-PreparedStatement pstmt = con.prepareStatement("SELECT * FROM FLIGHT WHERE nr=? AND month=? AND year=?");
+PreparedStatement pstmt = con.prepareStatement(
+    "SELECT * FROM FLIGHT WHERE nr=? AND month=? AND year=?"
+);
 pstmt.setString(1, "LH2246");
 pstmt.setInt(2, 7);
 pstmt.setInt(3, 2023);
