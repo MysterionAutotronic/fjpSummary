@@ -2417,7 +2417,7 @@ public class Runnable1 implements Runnable {
 Methode 3:
 ```java
 // anonyme Klasse
-public class Unsynchronized {
+public class Unsynchronized { // <- Parent Klasse
     public void methodOne() {
         Worker.doSomething(); // calculation with static var
     }
