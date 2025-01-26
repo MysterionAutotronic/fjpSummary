@@ -1968,6 +1968,8 @@ ArrayList list = cls.newInstance(); // Kein Cast notwendig
 
 ## Reflections Methoden
 ### Attribute
+- `import java.lang.reflect.Field`
+
 Get attribute:
 ```java
 Field f = cls.getField("name");
