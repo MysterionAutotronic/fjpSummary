@@ -217,7 +217,17 @@ enum Seasons {
     }
 
     // um Methoden erweiterbar
-    public static void main() {}
+    public static void main() {
+        Seasons s = SUMMER;
+        Seasons a = valueOf("AUTUMN");
+
+        switch (s) {
+            case SPRING:
+                System.out.println("March-May");
+                break;
+            default:
+                break;
+    }
 }
 ```
 
