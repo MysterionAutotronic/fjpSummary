@@ -261,6 +261,7 @@ public enum Months {
     - `LinkedList<String> list = new List<String>();`
     - `LinkedList list = new List();`
 - funktioniert, da Interface (entweder LinkedList oder ArrayList ohne downcast)
+- primitive Datentypen nicht erlaubt (Wrapperklasse `Integer`, `Double` ...)
 
 ### Imports
 ```java
@@ -2813,4 +2814,5 @@ import java.util.Stack;
 
 Stack<T> s = new Stack<>();
 s.push(1);
+s.isEmpty();
 ```
