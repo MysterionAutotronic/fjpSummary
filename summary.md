@@ -273,6 +273,8 @@ import java.util.List;
 
 ### ArrayList<> (mutable)
 ```java
+import java.util.Arrays;
+
 List<String> sl = new ArrayList<>(Arrays.asList("ich", "bin"));
 sl.add("nicht"); // allowed
 sl.set(1, "nicht"); // allowed
