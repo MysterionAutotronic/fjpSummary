@@ -2101,7 +2101,8 @@ IllegalArgumentException, IllegalAccessException, InvocationTargetException {
 
 ## Annotations
 - Von jedem Element können Annotations mithilfe von Reflection gelesen werden
-- `getAnnotations()` - Annotations von Superklassen dabei
+    - Field, Constructor<?>, Class<>, Method
+- `Annotations[] as = getAnnotations()` - Annotations von Superklassen dabei
 - `getDeclaredAnnotations()`
 
 
