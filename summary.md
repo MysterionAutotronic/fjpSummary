@@ -2762,3 +2762,34 @@ private void consume() throws InterruptedException {
 **Komposition**: Starke *hat-eine* Beziehung (Haus hat Räume, Räume existieren nicht ohne Haus)
 
 **Vererbung**: *ist-eine* Beziehung (Hund ist Tier)
+
+
+
+
+
+# Iterable
+```java
+import java.util.Iterator;
+
+public class List<T> implements Iterable<T> {
+	private T[] elements;
+
+	@Override
+	public Iterator<T> iterator() {
+		return new Iterator<T>(){
+
+			private int pos = 0;
+			
+			@Override
+			public boolean hasNext() {
+				return pos < elements.length;
+			}
+
+			@Override
+			public T next() {
+				return elements[pos++];
+			}
+		};
+	}
+}
+```
