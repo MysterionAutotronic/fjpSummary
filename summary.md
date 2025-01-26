@@ -2817,3 +2817,46 @@ Stack<T> s = new Stack<>();
 s.push(1);
 s.isEmpty();
 ```
+
+## File Reading
+
+ohne Stream:
+```java
+import java.io.BufferedReader;
+import java.io.FileReader;
+
+public class BufferedReaderExample {
+    public static void main(String[] args) throws Exception {
+        BufferedReader bufferedReader = new BufferedReader(new FileReader("example.txt"));
+        String line;
+        while ((line = bufferedReader.readLine()) != null) {
+            System.out.println(line);
+        }
+        bufferedReader.close();
+    }
+}
+```
+
+mit Stream:
+```java
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.stream.Stream;
+
+public class BufferedReaderStreamExample {
+    public static void main(String[] args) {
+        String filePath = "example.txt"; // Replace with your file path
+
+        try (BufferedReader bufferedReader = new BufferedReader(new FileReader(filePath))) {
+            // Read file as a stream
+            Stream<String> lines = bufferedReader.lines();
+
+            // Process each line using a lambda or method reference
+            lines.forEach(System.out::println);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+}
+```
