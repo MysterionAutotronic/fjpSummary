@@ -854,7 +854,7 @@ interface BinaryOperator<T> {
 
 ## forEach
 - Iteriert über alle Elemente, die Iterable implementiert z.B. Collections
-- erwarteter Consumer Interface
+- erwartet Consumer Interface
 ```java
 void forEach(Consumer action)
 list.forEach(p -> System.out.println(p));
