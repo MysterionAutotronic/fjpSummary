@@ -198,6 +198,7 @@ public static void main() {
 }
 ```
 - Nur letzter Formalparameter darf Vararg-Parameter sein
+- Länge mit v.length
 
 
 # Aufzählung (enum)
