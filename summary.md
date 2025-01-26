@@ -2766,8 +2766,8 @@ private void consume() throws InterruptedException {
 
 
 
-
-# Iterable
+# Misc
+## Iterable
 ```java
 import java.util.Iterator;
 
@@ -2792,4 +2792,25 @@ public class List<T> implements Iterable<T> {
 		};
 	}
 }
+```
+
+
+## Math
+```java
+import java.lang.Math;
+
+int max = 10;
+int min = 1;
+int range = max - min + 1;
+
+int rand = (int)(Math.random() * range) + min;
+```
+
+
+## Stack
+```java
+import java.util.Stack;
+
+Stack<T> s = new Stack<>();
+s.push(1);
 ```
