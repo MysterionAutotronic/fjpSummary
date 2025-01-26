@@ -1101,7 +1101,7 @@ public record PersonRecord(String name, PersonRecord partner) {
 
 
 ## Fixture
-- `import org.junit.*`: weglassen von `@ort.junit` vor Fixtures
+- `import org.junit.*`: weglassen von `@org.junit` vor Fixtures
 - `@org.junit.Test`: Testmethoden
 - `@org.junit.BeforeEach`: Initialisierungscode vor jeder Testmethode
 - `@org.junit.AfterEach`: Aufräumcode nach jeder Testmethode
