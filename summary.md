@@ -1318,7 +1318,7 @@ static Stream<Arguments> stringIntAndListProvider() {
 
 
 
-# Robustheit & Performance
+# Robustheit
 - Zugriffsrechte möglichst restriktiv setzen
 
 ## Modifier
@@ -2858,5 +2858,14 @@ public class BufferedReaderStreamExample {
             e.printStackTrace();
         }
     }
+}
+```
+
+## Thread Sleep
+```java
+try {
+    Thread.sleep(10);  // ms
+} catch (InterruptedException e) {
+    ...
 }
 ```
