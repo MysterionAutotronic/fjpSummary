@@ -868,8 +868,8 @@ list.forEach(System.out::println);
 - entspricht einer Pipeline: Source -> Operations -> Consumer
 - **Sources**: Collection, Arrays, Files, ...
 - **Intermediate-Operations**: filter(Predicate p), map(Function f), sorted(Comparator c)
-- **Consumer/Terminal-Operations**: sum(T), collect(Collection), reduce(T), forEach(Consumer)
-    - reduce: subtotal/akkumulator, element -> subtotal + elements
+- **Consumer/Terminal-Operations**: sum(T), collect(Collection), reduce(T), forEach (Consumer), anyMatch(Predicate p)
+    - reduce: (accStartVal, (a,b) -> {...})
 
 Beispiel 1:
 ```java
