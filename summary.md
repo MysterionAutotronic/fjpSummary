@@ -1090,6 +1090,7 @@ public record PersonRecord(String name, PersonRecord partner) {
 - Test-Driven Development (TDD): Testfälle vor Implementierung schreiben & testbares Design
 
 ## Überprüfungsmethoden
+- `import static org.junit.Assert.*`
 - `assertEquals(expected, actual)`: prüft auf Gleichheit
     - bei `Object`: `x.equals(y)`
     - bei prim. Datentypen: `x == y`
